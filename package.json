@@ -1,5 +1,5 @@
 {
-  "homepage":"http://nicjac.github.io/vaccine-tracker-uk"
+  "homepage":"http://nicjac.github.io/vaccine-tracker-uk",
   "name": "uk-vaccine-tracker",
   "version": "0.1.0",
   "private": true,
@@ -21,7 +21,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy":"gh-pages -d build",
+    "deploy":"cp CNAME public && gh-pages -d build",
     "predeploy":"npm run build"
   },
   "eslintConfig": {
