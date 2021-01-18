@@ -15,28 +15,26 @@ import VaccinationProgressPlot from "./components/VaccinationProgressPlot";
 import DailyRatesPlot from "./components/DailyRatesPlot";
 import GenericContainer from "./components/GenericContainer";
 import logo from "./assets/logo.png";
+import vaccination_json from "./data/vaccination-data.json";
+import moment from "moment";
 
 function App() {
-  const [rawData, setRawData] = useState(null);
   const [parsedData, setParsedData] = useState(null);
+  const [updateDate, setUpdateDate] = useState(null);
 
   // Load, convert, and sort data
   useEffect(() => {
-    fetch("./data/PHE-vaccination/2021-01-18.json", { mode: "no-cors" })
-      .then((response) => response.text())
-      .then((fileData) => {
-        // Create JSON object
-        const jsonData = JSON.parse(fileData);
-        let rawData = jsonData.data;
+    let rawData = vaccination_json.data;
 
-        // Sort by date (newer first)
-        rawData.sort(function (a, b) {
-          return new Date(a.date) - new Date(b.date);
-        });
+    // Sort by date (newer first)
+    rawData.sort(function (a, b) {
+      return new Date(a.date) - new Date(b.date);
+    });
 
-        setParsedData(rawData);
-      })
-      .catch((error) => console.error(error));
+    setParsedData(rawData);
+
+    const latestDate = rawData[rawData.length - 1].data;
+    setUpdateDate(moment(latestDate).format("DD MMMM YYYY"));
   }, []);
 
   return (
@@ -95,20 +93,20 @@ function App() {
           ChildComponent={<VaccinationProgressPlot parsedData={parsedData} />}
           title="Rollout Tracker"
           description="Breakdown of the overall COVID vaccine rollout in the UK for 1st and 2nd doses."
-          dateUpdated="18/01/2021"
+          dateUpdated={updateDate}
         />
         <GenericContainer
           ChildComponent={<StackedVaccinationPlot parsedData={parsedData} />}
           title="Cumulative Doses Administered Over Time"
           description="Cumulative first and second doses administered since 11 January
           2021."
-          dateUpdated="18/01/2021"
+          dateUpdated={updateDate}
         />
         <GenericContainer
           ChildComponent={<DailyRatesPlot parsedData={parsedData} />}
           title="Daily Vaccination Rates"
           description="Daily vaccination rates for 1st and 2nd doses since 11 January 2021."
-          dateUpdated="18/01/2021"
+          dateUpdated={updateDate}
         />
       </Container>
     </div>

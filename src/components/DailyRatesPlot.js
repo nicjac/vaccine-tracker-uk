@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   XAxis,
   YAxis,
@@ -29,7 +29,13 @@ const CustomizedAxisTick = ({ x, y, stroke, payload }) => {
 };
 
 const DailyRatesPlot = ({ parsedData }) => {
+  useEffect(() => {
+    if (parsedData) parsedData.shift();
+  }, [parsedData]);
+
   if (parsedData) {
+    // parsedData.shift()
+
     return (
       <ResponsiveContainer width="100%" height={500}>
         <BarChart
@@ -79,13 +85,13 @@ const DailyRatesPlot = ({ parsedData }) => {
           <Tooltip
             formatter={(value, name) => {
               switch (name) {
-                case "cumPeopleVaccinatedFirstDoseByPublishDate":
+                case "newPeopleVaccinatedFirstDoseByPublishDate":
                   return [
                     new Intl.NumberFormat("en").format(value),
                     "First Dose",
                   ];
 
-                case "cumPeopleVaccinatedSecondDoseByPublishDate":
+                case "newPeopleVaccinatedSecondDoseByPublishDate":
                   return [
                     new Intl.NumberFormat("en").format(value),
                     "Second Dose",
