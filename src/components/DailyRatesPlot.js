@@ -4,15 +4,12 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ReferenceLine,
   BarChart,
   Bar,
   Text,
   Legend,
-  Label,
   ResponsiveContainer,
 } from "recharts";
-import { Card, Icon } from "semantic-ui-react";
 
 const CustomizedAxisTick = ({ x, y, stroke, payload }) => {
   return (
@@ -33,7 +30,6 @@ const CustomizedAxisTick = ({ x, y, stroke, payload }) => {
 
 const DailyRatesPlot = ({ parsedData }) => {
   if (parsedData) {
-    console.log(parsedData);
     return (
       <ResponsiveContainer width="100%" height={500}>
         <BarChart

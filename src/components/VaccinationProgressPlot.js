@@ -9,7 +9,6 @@ import {
   Label,
   ResponsiveContainer,
 } from "recharts";
-import { Card, Icon } from "semantic-ui-react";
 
 const CustomBarLabel = ({ x, y, fill, value, width, viewBox, height }) => {
   return (

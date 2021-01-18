@@ -1,5 +1,5 @@
 {
-  "homepage":"https://www.vaccine-tracker.uk",
+  "homepage": "https://www.vaccine-tracker.uk",
   "name": "uk-vaccine-tracker",
   "version": "0.1.0",
   "private": true,
@@ -9,7 +9,6 @@
     "@testing-library/user-event": "^12.1.10",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "react-papaparse": "^3.11.1",
     "react-scripts": "4.0.1",
     "recharts": "^2.0.3",
     "semantic-ui-css": "^2.4.1",
@@ -21,8 +20,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy":"cp CNAME public && gh-pages -d build",
-    "predeploy":"npm run build"
+    "deploy": "cp CNAME public && gh-pages -d build",
+    "predeploy": "npm run build"
   },
   "eslintConfig": {
     "extends": [

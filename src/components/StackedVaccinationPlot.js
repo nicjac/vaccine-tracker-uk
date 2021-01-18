@@ -12,7 +12,6 @@ import {
   Label,
   ResponsiveContainer,
 } from "recharts";
-import { Card, Icon } from "semantic-ui-react";
 
 const CustomizedAxisTick = ({ x, y, stroke, payload }) => {
   return (
@@ -33,7 +32,6 @@ const CustomizedAxisTick = ({ x, y, stroke, payload }) => {
 
 const StackedVaccinationPlot = ({ parsedData }) => {
   if (parsedData) {
-    console.log(parsedData);
     return (
       <ResponsiveContainer width="100%" height={500}>
         <AreaChart
@@ -114,7 +112,7 @@ const StackedVaccinationPlot = ({ parsedData }) => {
             stroke="#82ca9d"
             fill="#82ca9d"
           />
-          <ReferenceLine y={15000000} stroke="red" strokeDasharray="3 3">
+          <ReferenceLine y={13000000} stroke="red" strokeDasharray="3 3">
             <Label value="Top 4 Priority Groups Target" position="top" />
           </ReferenceLine>
         </AreaChart>
