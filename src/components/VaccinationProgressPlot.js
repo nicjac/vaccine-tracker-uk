@@ -4,7 +4,6 @@ import {
   Bar,
   XAxis,
   YAxis,
-  Tooltip,
   Legend,
   ReferenceLine,
   Label,
@@ -50,20 +49,20 @@ const VaccinationProgressPlot = ({ parsedData }) => {
                 layout="vertical"
                 margin={{
                   top: 5,
-                  right: 100,
+                  right: 0,
                   left: 0,
                   bottom: 20,
                 }}
               >
                 {/* <CartesianGrid strokeDasharray="3 3" /> */}
                 <XAxis type="number" domain={[0, 66000000]} hide />
-                <YAxis type="category" domain={[0, 0]} tick={false} />
+                <YAxis type="category" domain={[0, 0]} tick={false} hide />
                 <Legend
                   verticalAlign="top"
                   height={50}
                   align="center"
                   wrapperStyle={{
-                    paddingLeft: "90px",
+                    paddingLeft: "0px",
                   }}
                   formatter={(value, entry, index) => {
                     switch (value) {
@@ -113,6 +112,7 @@ const VaccinationProgressPlot = ({ parsedData }) => {
                     value="Whole Population"
                     position="top"
                     fontSize="15"
+                    dx={-60}
                     fontStyle="bold"
                     fontFamily={"Roboto"}
                   />
