@@ -33,8 +33,9 @@ function App() {
 
     setParsedData(rawData);
 
-    const latestDate = rawData[rawData.length - 1].data;
-    setUpdateDate(moment(latestDate).format("DD MMMM YYYY"));
+    // Compute update date (assumed to be latest date in data + 1 day)
+    const latestDate = rawData[rawData.length - 1].date;
+    setUpdateDate(moment(latestDate).add(1, "d").format("DD MMMM YYYY"));
   }, []);
 
   return (
