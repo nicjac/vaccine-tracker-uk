@@ -1,12 +1,12 @@
 import React from "react";
 import {
-  AreaChart,
-  Area,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ReferenceLine,
+  BarChart,
+  Bar,
   Text,
   Legend,
   Label,
@@ -31,12 +31,12 @@ const CustomizedAxisTick = ({ x, y, stroke, payload }) => {
   );
 };
 
-const StackedVaccinationPlot = ({ parsedData }) => {
+const DailyRatesPlot = ({ parsedData }) => {
   if (parsedData) {
     console.log(parsedData);
     return (
       <ResponsiveContainer width="100%" height={500}>
-        <AreaChart
+        <BarChart
           data={parsedData}
           margin={{
             top: 10,
@@ -51,10 +51,10 @@ const StackedVaccinationPlot = ({ parsedData }) => {
             height={36}
             formatter={(value, entry, index) => {
               switch (value) {
-                case "cumPeopleVaccinatedFirstDoseByPublishDate":
+                case "newPeopleVaccinatedFirstDoseByPublishDate":
                   return "First Dose";
 
-                case "cumPeopleVaccinatedSecondDoseByPublishDate":
+                case "newPeopleVaccinatedSecondDoseByPublishDate":
                   return "Second Dose";
 
                 default:
@@ -72,7 +72,7 @@ const StackedVaccinationPlot = ({ parsedData }) => {
             label={{ dy: 75, value: "Reporting Date" }}
           />
           <YAxis
-            domain={[0, 20000000]}
+            // domain={[0, 20000000]}
             tickFormatter={(value) => new Intl.NumberFormat("en").format(value)}
             label={
               <Text x={0} y={0} dx={50} dy={270} offset={0} angle={-90}>
@@ -100,27 +100,24 @@ const StackedVaccinationPlot = ({ parsedData }) => {
               }
             }}
           />
-          <Area
+          <Bar
             type="monotone"
-            dataKey="cumPeopleVaccinatedFirstDoseByPublishDate"
+            dataKey="newPeopleVaccinatedFirstDoseByPublishDate"
             stackId="1"
             stroke="#8884d8"
             fill="#8884d8"
           />
-          <Area
+          <Bar
             type="monotone"
-            dataKey="cumPeopleVaccinatedSecondDoseByPublishDate"
+            dataKey="newPeopleVaccinatedSecondDoseByPublishDate"
             stackId="1"
             stroke="#82ca9d"
             fill="#82ca9d"
           />
-          <ReferenceLine y={15000000} stroke="red" strokeDasharray="3 3">
-            <Label value="Top 4 Priority Groups Target" position="top" />
-          </ReferenceLine>
-        </AreaChart>
+        </BarChart>
       </ResponsiveContainer>
     );
   } else return null;
 };
 
-export default StackedVaccinationPlot;
+export default DailyRatesPlot;
