@@ -12,21 +12,25 @@ import {
   Label,
   ResponsiveContainer,
 } from "recharts";
+import moment from "moment";
 
 const CustomizedAxisTick = ({ x, y, stroke, payload }) => {
   return (
-    <g transform={`translate(${x},${y})`}>
-      <text
-        x={0}
-        y={0}
-        dy={16}
-        textAnchor="end"
-        fill="#666"
-        transform="rotate(-35)"
-      >
-        {payload.value}
-      </text>
-    </g>
+    // <g transform={`translate(${x},${y})`}>
+    <text
+      x={x}
+      y={y}
+      // x={0}
+      // y={0}
+      dx={-18}
+      dy={16}
+      // textAnchor="end"
+      fill="#666"
+      // transform="rotate(-35)"
+    >
+      {moment(payload.value).format("DD MMM")}
+    </text>
+    // </g>
   );
 };
 
@@ -39,8 +43,8 @@ const StackedVaccinationPlot = ({ parsedData }) => {
           margin={{
             top: 10,
             right: 30,
-            left: 100,
-            bottom: 100,
+            left: 15,
+            bottom: 25,
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
@@ -67,13 +71,13 @@ const StackedVaccinationPlot = ({ parsedData }) => {
               parsedData[0].date,
               parsedData[parsedData.length - 1].date,
             ]}
-            label={{ dy: 75, value: "Reporting Date" }}
+            label={{ dy: 30, value: "Reporting Date" }}
           />
           <YAxis
-            domain={[0, 20000000]}
-            tickFormatter={(value) => new Intl.NumberFormat("en").format(value)}
+            domain={[0, 16000000]}
+            tickFormatter={(value) => `${Math.round(value / 1000000)}M`}
             label={
-              <Text x={0} y={0} dx={50} dy={270} offset={0} angle={-90}>
+              <Text x={0} y={0} dx={20} dy={270} offset={0} angle={-90}>
                 Individuals Vaccinated
               </Text>
             }
