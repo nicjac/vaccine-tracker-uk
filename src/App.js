@@ -94,7 +94,7 @@ function App() {
         <GenericContainer
           ChildComponent={<ScoreCardGroup parsedData={parsedData} />}
           title="Government Target Score Card"
-          description="Keeping track of the government targets. The dates and number of individuals are based on the UK COVID-19 Delivery Plan and the explainer by the Institute For Government."
+          description="Keeping track of the government targets. The dates and number of individuals are based on the UK COVID-19 Delivery Plan and the explainer by the Institute For Government. Prediction based on a 7-day vaccination rate average."
           dateUpdated={updateDate}
         />
         <GenericContainer
