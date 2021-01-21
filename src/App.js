@@ -14,6 +14,8 @@ import StackedVaccinationPlot from "./components/StackedVaccinationPlot";
 import VaccinationProgressPlot from "./components/VaccinationProgressPlot";
 import DailyRatesPlot from "./components/DailyRatesPlot";
 import GenericContainer from "./components/GenericContainer";
+import ScoreCardGroup from "./components/ScoreCardGroup";
+
 import logo from "./assets/logo.png";
 import vaccination_json from "./data/vaccination-data.json";
 import moment from "moment";
@@ -89,7 +91,12 @@ function App() {
             </List>
           </Segment>
         </Segment>
-
+        <GenericContainer
+          ChildComponent={<ScoreCardGroup parsedData={parsedData} />}
+          title="Government Target Score Card"
+          description="Keeping track of the government targets. The dates and number of individuals are based on the UK COVID-19 Delivery Plan and the explainer by the Institute For Government."
+          dateUpdated={updateDate}
+        />
         <GenericContainer
           ChildComponent={<VaccinationProgressPlot parsedData={parsedData} />}
           title="Rollout Tracker"

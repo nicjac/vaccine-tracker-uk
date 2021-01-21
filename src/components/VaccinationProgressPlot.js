@@ -9,6 +9,11 @@ import {
   Label,
   ResponsiveContainer,
 } from "recharts";
+import {
+  TARGET_4_TOP_PRIORITY_GROUPS_INDIVIDUALS,
+  TARGET_ALL_GROUPS_INDIVIDUALS,
+  TARGET_ADULT_POPULATION_INDIVIDUALS,
+} from "../data/ImportantValues";
 
 const CustomBarLabel = ({ x, y, fill, value, width, viewBox, height }) => {
   return (
@@ -80,7 +85,11 @@ const VaccinationProgressPlot = ({ parsedData }) => {
             background={{ fill: "#eee" }}
             label={<CustomBarLabel />}
           />
-          <ReferenceLine x={13000000} stroke="red" strokeDasharray="3 3">
+          <ReferenceLine
+            x={TARGET_4_TOP_PRIORITY_GROUPS_INDIVIDUALS}
+            stroke="red"
+            strokeDasharray="3 3"
+          >
             <Label
               value="Top 4 Priority Groups"
               position="top"
@@ -89,7 +98,11 @@ const VaccinationProgressPlot = ({ parsedData }) => {
               fontFamily={"Roboto"}
             />
           </ReferenceLine>
-          <ReferenceLine x={25000000} stroke="red" strokeDasharray="3 3">
+          <ReferenceLine
+            x={TARGET_ALL_GROUPS_INDIVIDUALS}
+            stroke="red"
+            strokeDasharray="3 3"
+          >
             <Label
               value="All Priority Groups"
               position="bottom"
@@ -98,12 +111,16 @@ const VaccinationProgressPlot = ({ parsedData }) => {
               fontFamily={"Roboto"}
             />
           </ReferenceLine>
-          <ReferenceLine x={66000000} stroke="red" strokeDasharray="3 3">
+          <ReferenceLine
+            x={TARGET_ADULT_POPULATION_INDIVIDUALS}
+            stroke="red"
+            strokeDasharray="3 3"
+          >
             <Label
-              value="Whole Population"
+              value="Adult Population"
               position="top"
               fontSize="15"
-              dx={-60}
+              // dx={-60}
               fontStyle="bold"
               fontFamily={"Roboto"}
             />

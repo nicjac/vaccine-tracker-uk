@@ -12,7 +12,7 @@ const GenericContainer = ({
       <Card.Content>
         <Card.Header>{title}</Card.Header>
         <Card.Meta>{description}</Card.Meta>
-        <Card.Description>{ChildComponent}</Card.Description>
+        <Card.Description textAlign="center">{ChildComponent}</Card.Description>
       </Card.Content>
       <Card.Content extra>
         <Icon name="line graph" />
