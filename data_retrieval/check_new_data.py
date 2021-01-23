@@ -27,7 +27,11 @@ if all_dates_api[0].date() > all_dates_existing[0].date():
     with open("./src/data/vaccination-data.json", "w") as file:
 
         json.dump(response_data, file)
-        sys.exit(0)
+
+    print("Updated data and exiting")
+
+    sys.exit(0)
 
 else:
+    print("Exiting without update")
     sys.exit(1)
