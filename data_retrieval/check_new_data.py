@@ -9,14 +9,24 @@ r = requests.get(
 
 response_data = json.loads(r.content)
 
-all_dates = [datetime.strptime(x["date"], "%Y-%m-%d") for x in response_data["data"]]
-all_dates.sort(reverse=True)
+all_dates_api = [
+    datetime.strptime(x["date"], "%Y-%m-%d") for x in response_data["data"]
+]
+all_dates_api.sort(reverse=True)
 
-if all_dates[0].date() == ((datetime.today() - timedelta(days=1))).date():
+with open("./src/data/vaccination-data.json", "r") as file:
+    existing_data = json.load(file)
 
-    with open("../src/data/data-vaccination.json", "w") as file:
+all_dates_existing = [
+    datetime.strptime(x["date"], "%Y-%m-%d") for x in existing_data["data"]
+]
+all_dates_existing.sort(reverse=True)
 
-        json.dump(response_data["data"], file)
+if all_dates_api[0].date() > all_dates_existing[0].date():
+
+    with open("./src/data/vaccination-data.json", "w") as file:
+
+        json.dump(response_data, file)
         sys.exit(0)
 
 else:
