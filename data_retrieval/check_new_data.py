@@ -28,10 +28,7 @@ if all_dates_api[0].date() > all_dates_existing[0].date():
 
         json.dump(response_data, file)
 
-    print("Updated data and exiting")
-
-    sys.exit(0)
+    print(f"::set-output name=check_outcome::true")
 
 else:
-    print("Exiting without update")
-    sys.exit(1)
+    print(f"::set-output name=check_outcome::false")
