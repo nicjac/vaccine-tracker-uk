@@ -14,7 +14,7 @@ all_dates.sort(reverse=True)
 
 if all_dates[0].date() == ((datetime.today() - timedelta(days=1))).date():
 
-    with open("data-vaccination.json", "w") as file:
+    with open("../src/data/data-vaccination.json", "w") as file:
 
         json.dump(response_data["data"], file)
         sys.exit(0)
