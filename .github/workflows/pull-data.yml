@@ -20,7 +20,7 @@ jobs:
       id: checkdata
       run: |
         python data_retrieval/check_new_data.py
-    - name: Create artifact of test coverage
+    - name: Update data if available
       if: ${{ steps.checkdata.outputs.check_outcome == true  }}
       uses: EndBug/add-and-commit@v7 
       with:
