@@ -28,7 +28,7 @@ if all_dates_api[0].date() > all_dates_existing[0].date():
 
         json.dump(response_data, file)
 
-    print(f"::set-output name=check_outcome::true")
+    print(f"::set-output name=check_outcome::true", flush=True)
 
 else:
-    print(f"::set-output name=check_outcome::false")
+    print(f"::set-output name=check_outcome::false", flush=True)
