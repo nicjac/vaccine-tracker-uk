@@ -1,4 +1,4 @@
-name: Pull Data
+name: Check and Pull PHE Data
 
 on: [workflow_dispatch]
 
@@ -20,9 +20,9 @@ jobs:
       id: check_data
       continue-on-error: true
       run: |
-        data_available=$(python data_retrieval/check_new_data.py)
+        python data_retrieval/check_new_data.py; check_data=$?
     - name: Update data if available
-      if: ${{ steps.check_data.data_available }} == 0
+      if: ${{ steps.check_data.check_data }} == 0
       uses: EndBug/add-and-commit@v7 
       with:
         add: 'src/data/vaccination-data.json'
