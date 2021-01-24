@@ -22,7 +22,7 @@ jobs:
       run: |
         data_available=$(python data_retrieval/check_new_data.py)
     - name: Update data if available
-      if: ${{ steps.check_data.data_available }} == 1
+      if: ${{ steps.check_data.data_available }} == 0
       uses: EndBug/add-and-commit@v7 
       with:
         add: 'src/data/vaccination-data.json'
