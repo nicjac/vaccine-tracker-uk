@@ -4,6 +4,8 @@ on: [workflow_dispatch]
 
 jobs:
   check_for_data:
+    env:
+      data_available: "n/a"
     runs-on: ubuntu-latest
 
     steps:
