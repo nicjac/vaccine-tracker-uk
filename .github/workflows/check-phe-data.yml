@@ -1,0 +1,46 @@
+name: PHE Data Update
+
+on:
+  workflow_dispatch:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '*/5 * * * *'
+
+jobs:
+  check_for_data:
+    env:
+      data_available: "n/a"
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.7
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r ./data_retrieval/requirements.txt
+    - name: Get and check data
+      id: check_data
+      continue-on-error: true
+      run: |
+        data_available=$(python data_retrieval/check_new_data.py)
+        echo "data_available=$data_available" >> $GITHUB_ENV
+    - name: Update data if available
+      if: env.data_available == 'new-data'
+      uses: EndBug/add-and-commit@v7 
+      with:
+        add: 'src/data/vaccination-data.json'
+        author_name: Nicolas Jaccard
+        author_email: nicolas.jaccard@gmail.com
+    - name: Setup Node
+      if: env.data_available == 'new-data'
+      uses: actions/setup-node@v2
+      with:
+        node-version: '12'
+    - name: Deploy if data available
+      if: env.data_available == 'new-data'
+      run: |
+        npm run deploy
