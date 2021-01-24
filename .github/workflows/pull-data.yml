@@ -17,11 +17,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r ./data_retrieval/requirements.txt
     - name: Get and check data
+      id: check_data
       continue-on-error: true
       run: |
         python data_retrieval/check_new_data.py
     - name: Update data if available
-      if: ${{ success() }}
+      if: ${{ steps.check_data.outcome }} != 'failure'
       uses: EndBug/add-and-commit@v7 
       with:
         add: 'src/data/vaccination-data.json'
