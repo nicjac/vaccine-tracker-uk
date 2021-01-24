@@ -7,6 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - continue-on-error: true
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
@@ -17,11 +18,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r ./data_retrieval/requirements.txt
     - name: Get and check data
-      id: checkdata
       run: |
         python data_retrieval/check_new_data.py
     - name: Update data if available
-      if: ${{ steps.checkdata.outputs.check_outcome == false  }}
+      if: ${{ success() }}
       uses: EndBug/add-and-commit@v7 
       with:
         add: 'src/data/vaccination-data.json'
