@@ -43,4 +43,5 @@ jobs:
     - name: Deploy if data available
       if: env.data_available == 'new-data'
       run: |
+        npm install
         npm run deploy
