@@ -22,6 +22,7 @@ jobs:
       run: |
         python data_retrieval/check_new_data.py; py_exit_code=$?
         echo "data_available=$py_exit_code"
+        echo "data_available=$py_exit_code"
         echo "data_available=$py_exit_code" >> $GITHUB_ENV
     - run: |
         echo "Debug!"
