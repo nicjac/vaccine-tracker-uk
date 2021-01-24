@@ -1,10 +1,10 @@
 name: Check and Pull PHE Data
 
 on:
-  workflow_dispatch: true
+  workflow_dispatch:
   schedule:
     # * is a special character in YAML so you have to quote this string
-    - cron:  '*/15 * * * *'
+    - cron:  '*/5 * * * *'
 
 jobs:
   check_for_data:
