@@ -28,7 +28,7 @@ jobs:
         echo $data_available
         echo $env.data_available
     - name: Update data if available
-      if: ${{ env.data_available }} == "new-data"
+      if: $data_available == "new-data"
       uses: EndBug/add-and-commit@v7 
       with:
         add: 'src/data/vaccination-data.json'
