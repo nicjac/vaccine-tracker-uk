@@ -23,12 +23,7 @@ jobs:
       continue-on-error: true
       run: |
         data_available=$(python data_retrieval/check_new_data.py)
-        echo "data_available=$data_available"
         echo "data_available=$data_available" >> $GITHUB_ENV
-    - run: |
-        echo "Debug!"
-        echo $data_available
-        echo $env.data_available
     - name: Update data if available
       if: env.data_available == 'new-data'
       uses: EndBug/add-and-commit@v7 
