@@ -21,8 +21,9 @@ jobs:
       continue-on-error: true
       run: |
         python data_retrieval/check_new_data.py; py_exit_code=$?
-        echo "data_available=py_exit_code" >> $GITHUB_ENV
+        echo "data_available=$py_exit_code" >> $GITHUB_ENV
     - run: |
+        echo "Debug!"
         echo $data_available
     - name: Update data if available
       if: ${{ env.data_available }} == 0
