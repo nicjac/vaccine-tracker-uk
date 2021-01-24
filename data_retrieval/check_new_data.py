@@ -28,9 +28,9 @@ if all_dates_api[0].date() > all_dates_existing[0].date():
 
         json.dump(response_data, file)
 
-    print("Updated data and exiting")
-    sys.exit(0)
+    print("new-data")
+    # sys.exit(0)
 
 else:
-    print("Exiting without update")
-    sys.exit(1)
+    print("no-new-data")
+    # sys.exit(1)
