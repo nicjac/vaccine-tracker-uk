@@ -31,3 +31,12 @@ jobs:
         add: 'src/data/vaccination-data.json'
         author_name: Nicolas Jaccard
         author_email: nicolas.jaccard@gmail.com
+    - name: Setup Node
+      if: env.data_available == 'new-data'
+      uses: actions/setup-node@v2
+      with:
+        node-version: '12'
+    - name: Deploy if data available
+      if: env.data_available == 'new-data'
+      run: |
+        npm run deploy
