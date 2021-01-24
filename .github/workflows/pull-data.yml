@@ -20,9 +20,12 @@ jobs:
       id: check_data
       continue-on-error: true
       run: |
-        python data_retrieval/check_new_data.py; check_data=$?
+        python data_retrieval/check_new_data.py; py_exit_code=$?
+        echo "data_available=py_exit_code" >> $GITHUB_ENV
+    - run: |
+        echo $data_available
     - name: Update data if available
-      if: ${{ steps.check_data.check_data }} == 0
+      if: ${{ data_available }} == 0
       uses: EndBug/add-and-commit@v7 
       with:
         add: 'src/data/vaccination-data.json'
