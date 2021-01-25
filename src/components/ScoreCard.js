@@ -106,7 +106,7 @@ const ScoreCard = ({
                   transformedData[latestIndex]["deltaTargetVsPredicted"]
                 )
               )}
-              days
+              &nbsp; days
             </b>
           </div>
         </Fragment>
@@ -135,7 +135,7 @@ const ScoreCard = ({
               {Math.round(
                 Math.abs(transformedData[latestIndex]["deltaTargetVsPredicted"])
               )}
-              days
+              &nbsp; days
             </b>
           </div>
         </Fragment>

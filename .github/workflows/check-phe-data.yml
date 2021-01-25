@@ -10,6 +10,8 @@ jobs:
   check_for_data:
     env:
       data_available: "n/a"
+      CI: false #Need for build (https://github.community/t/treating-warnings-as-errors-because-process-env-ci-true/18032/8)
+
     runs-on: ubuntu-latest
 
     steps:
