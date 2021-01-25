@@ -1,13 +1,21 @@
 import React, { useState, useEffect, Fragment } from "react";
 import { Grid, Segment, Header, Icon } from "semantic-ui-react";
-import {
-  CircularProgressbar,
-  CircularProgressbarWithChildren,
-  buildStyles,
-} from "react-circular-progressbar";
+import { CircularProgressbarWithChildren } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import moment from "moment";
 import _ from "lodash";
+import {
+  BarChart,
+  Bar,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ReferenceLine,
+  Cell,
+} from "recharts";
 
 const ScoreCard = ({
   parsedData,
@@ -16,57 +24,63 @@ const ScoreCard = ({
   title,
   description,
 }) => {
-  const [sevenDaysRate, setSevenDaysRate] = useState(null);
-  const [predictedDaysToTarget, setPredictedDaysToTarget] = useState(null);
-  const [daysToTarget, setDaysToTarget] = useState(null);
-  const [percentCompletion, setPercentCompletion] = useState(null);
+  const [transformedData, setTransformedData] = useState(null);
+
+  const computeSevenDaysRates = (data) => {
+    data.forEach((datum, index) => {
+      if (index >= 6) {
+        data[index]["sevenDaysRate"] = _.mean(
+          data
+            .slice(index - 6, index + 1)
+            .map((a) => a["newPeopleVaccinatedFirstDoseByPublishDate"])
+        );
+      } else data[index]["sevenDaysRate"] = null;
+    });
+
+    return data;
+  };
+
+  const computeDaysToTarget = (data) => {
+    data.forEach((datum, index) => {
+      data[index]["daysToTarget"] = moment(targetDate)
+        .startOf("day")
+        .diff(moment(data[index]["date"]).startOf("day"), "days");
+    });
+
+    return data;
+  };
+
+  const computePredictedDaysToTarget = (data) => {
+    data.forEach((datum, index) => {
+      data[index]["predictedDaysToTarget"] =
+        (targetIndividuals -
+          datum["cumPeopleVaccinatedFirstDoseByPublishDate"]) /
+        datum["sevenDaysRate"];
+
+      data[index]["deltaTargetVsPredicted"] =
+        data[index]["daysToTarget"] - data[index]["predictedDaysToTarget"];
+    });
+
+    return data;
+  };
 
   useEffect(() => {
     if (parsedData) {
-      let sevenDaysRates = parsedData
-        .slice(parsedData.length - 7, parsedData.length)
-        .map((a) => a["newPeopleVaccinatedFirstDoseByPublishDate"]);
+      let transformedData_ = JSON.parse(JSON.stringify(parsedData));
+      console.log(transformedData_);
+      transformedData_ = computeSevenDaysRates(transformedData_);
+      transformedData_ = computeDaysToTarget(transformedData_);
+      transformedData_ = computePredictedDaysToTarget(transformedData_);
 
-      const sevenDaysRate_ = _.mean(sevenDaysRates);
-      setSevenDaysRate(sevenDaysRate_);
-
-      const daysToTarget_ = moment(targetDate)
-        .startOf("day")
-        .diff(
-          moment(Date(parsedData[parsedData.length - 1]["date"])).startOf(
-            "day"
-          ),
-          "days"
-        );
-      setDaysToTarget(daysToTarget_);
-
-      setPredictedDaysToTarget(
-        Math.round(
-          (targetIndividuals -
-            parsedData[parsedData.length - 1][
-              "cumPeopleVaccinatedFirstDoseByPublishDate"
-            ]) /
-            sevenDaysRate_
-        )
-      );
-
-      setPercentCompletion(
-        (parsedData[parsedData.length - 1][
-          "cumPeopleVaccinatedFirstDoseByPublishDate"
-        ] /
-          targetIndividuals) *
-          100
-      );
+      setTransformedData(transformedData_);
     }
   }, [parsedData]);
 
-  if (parsedData) {
+  if (transformedData) {
     let progressContent;
+    const latestIndex = transformedData.length - 1;
 
-    console.log(daysToTarget);
-    console.log(predictedDaysToTarget);
-
-    if (predictedDaysToTarget > daysToTarget) {
+    if (transformedData[latestIndex]["deltaTargetVsPredicted"] < 0) {
       progressContent = (
         <Fragment>
           <Icon
@@ -86,11 +100,18 @@ const ScoreCard = ({
             }}
           >
             Predicted to miss target by &nbsp;
-            <b>{predictedDaysToTarget - daysToTarget} days</b>
+            <b>
+              {Math.abs(
+                Math.round(
+                  transformedData[latestIndex]["deltaTargetVsPredicted"]
+                )
+              )}
+              days
+            </b>
           </div>
         </Fragment>
       );
-    } else if (predictedDaysToTarget < daysToTarget) {
+    } else if (transformedData[latestIndex]["deltaTargetVsPredicted"] > 0) {
       progressContent = (
         <Fragment>
           <Icon
@@ -110,7 +131,12 @@ const ScoreCard = ({
             }}
           >
             Predicted to hit target early by &nbsp;
-            <b> {Math.abs(predictedDaysToTarget - daysToTarget)} days</b>
+            <b>
+              {Math.round(
+                Math.abs(transformedData[latestIndex]["deltaTargetVsPredicted"])
+              )}
+              days
+            </b>
           </div>
         </Fragment>
       );
@@ -141,19 +167,56 @@ const ScoreCard = ({
 
     return (
       <Grid.Column width={5} textAlign="center">
-        <Segment basic style={{ maxWidth: "200px" }}>
-          <Header as="h4" textAlign="center">
-            <Header.Content>{title}</Header.Content>
-            <Header.Subheader>
-              {`${targetIndividuals / 1000000}M 1st doses by ${moment(
-                targetDate
-              ).format("DD MMM")}`}
-            </Header.Subheader>
-          </Header>
-          <CircularProgressbarWithChildren value={percentCompletion}>
-            {progressContent}
-          </CircularProgressbarWithChildren>
-        </Segment>
+        <Grid centered>
+          <Segment
+            basic
+            style={{ maxWidth: "200px", marginTop: "10px" }}
+            textAlign="center"
+          >
+            <Header as="h4" textAlign="center">
+              <Header.Content>{title}</Header.Content>
+              <Header.Subheader>
+                {`${targetIndividuals / 1000000}M 1st doses by ${moment(
+                  targetDate
+                ).format("DD MMM")}`}
+              </Header.Subheader>
+            </Header>
+            <CircularProgressbarWithChildren
+              value={
+                (transformedData[latestIndex][
+                  "cumPeopleVaccinatedFirstDoseByPublishDate"
+                ] /
+                  targetIndividuals) *
+                100
+              }
+            >
+              {progressContent}
+            </CircularProgressbarWithChildren>
+            <ResponsiveContainer width={"100%"} height={50}>
+              <BarChart
+                margin={{
+                  top: 10,
+                  right: 40,
+                  left: 40,
+                  bottom: 0,
+                }}
+                data={transformedData.slice(6, transformedData.length)}
+              >
+                <Bar dataKey="deltaTargetVsPredicted" strokeWidth={2}>
+                  {transformedData
+                    .slice(6, transformedData.length)
+                    .map((entry, index) => {
+                      const color =
+                        entry.deltaTargetVsPredicted >= 0
+                          ? "#b8e6c2"
+                          : "#e6a1a1";
+                      return <Cell fill={color} />;
+                    })}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </Segment>
+        </Grid>
       </Grid.Column>
     );
   } else return null;

@@ -14,7 +14,7 @@ import ScoreCard from "./ScoreCard";
 const ScoreCardGroup = ({ parsedData }) => {
   return (
     <Grid stackable centered columns={3}>
-      <Grid.Row textAlign="center">
+      <Grid.Row textAlign="center" centered>
         <ScoreCard
           parsedData={parsedData}
           targetDate={TARGET_4_TOP_PRIORITY_GROUPS_DATE}

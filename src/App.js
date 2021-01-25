@@ -15,6 +15,7 @@ import VaccinationProgressPlot from "./components/VaccinationProgressPlot";
 import DailyRatesPlot from "./components/DailyRatesPlot";
 import GenericContainer from "./components/GenericContainer";
 import ScoreCardGroup from "./components/ScoreCardGroup";
+import VaccineStatistics from "./components/VaccineStatistics";
 
 import logo from "./assets/logo.png";
 import vaccination_json from "./data/vaccination-data.json";
@@ -92,9 +93,16 @@ function App() {
           </Segment>
         </Segment>
         <GenericContainer
+          ChildComponent={<VaccineStatistics parsedData={parsedData} />}
+          title="Key Numbers"
+          description="Key numbers related to the vaccination programme."
+          dateUpdated={updateDate}
+        />
+
+        <GenericContainer
           ChildComponent={<ScoreCardGroup parsedData={parsedData} />}
-          title="Government Target Score Card"
-          description="Keeping track of the government targets. The dates and number of individuals are based on the UK COVID-19 Delivery Plan and the explainer by the Institute For Government. Prediction based on a 7-day vaccination rate average."
+          title="Government Target Scorecard"
+          description="Keeping track of the government targets. The dates and number of individuals are based on the UK COVID-19 Delivery Plan and the explainer by the Institute For Government. Prediction based on a 7-day vaccination rate average. The bar plots show deviation from target over time."
           dateUpdated={updateDate}
         />
         <GenericContainer
