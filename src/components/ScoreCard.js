@@ -3,42 +3,10 @@ import { Grid, Segment, Header, Icon } from "semantic-ui-react";
 import { CircularProgressbarWithChildren } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import moment from "moment";
-import _ from "lodash";
-import {
-  BarChart,
-  Bar,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ReferenceLine,
-  Cell,
-} from "recharts";
+import { BarChart, Bar, ResponsiveContainer, Cell } from "recharts";
 
-const ScoreCard = ({
-  parsedData,
-  targetDate,
-  targetIndividuals,
-  title,
-  description,
-}) => {
+const ScoreCard = ({ parsedData, targetDate, targetIndividuals, title }) => {
   const [transformedData, setTransformedData] = useState(null);
-
-  const computeSevenDaysRates = (data) => {
-    data.forEach((datum, index) => {
-      if (index >= 6) {
-        data[index]["sevenDaysRate"] = _.mean(
-          data
-            .slice(index - 6, index + 1)
-            .map((a) => a["newPeopleVaccinatedFirstDoseByPublishDate"])
-        );
-      } else data[index]["sevenDaysRate"] = null;
-    });
-
-    return data;
-  };
 
   const computeDaysToTarget = (data) => {
     data.forEach((datum, index) => {
@@ -67,8 +35,6 @@ const ScoreCard = ({
   useEffect(() => {
     if (parsedData) {
       let transformedData_ = JSON.parse(JSON.stringify(parsedData));
-      console.log(transformedData_);
-      transformedData_ = computeSevenDaysRates(transformedData_);
       transformedData_ = computeDaysToTarget(transformedData_);
       transformedData_ = computePredictedDaysToTarget(transformedData_);
 
@@ -91,7 +57,6 @@ const ScoreCard = ({
           />
           <div
             style={{
-              fontSize: 12,
               marginTop: -5,
               fontSize: 14,
               marginLeft: 25,
@@ -122,7 +87,6 @@ const ScoreCard = ({
           />
           <div
             style={{
-              fontSize: 12,
               marginTop: -5,
               fontSize: 14,
               marginLeft: 25,
@@ -151,7 +115,6 @@ const ScoreCard = ({
           />
           <div
             style={{
-              fontSize: 12,
               marginTop: -5,
               fontSize: 14,
               marginLeft: 25,

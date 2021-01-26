@@ -1,16 +1,20 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  BarChart,
+  ComposedChart,
   Bar,
+  Line,
+  Cell,
   Text,
   Legend,
   ResponsiveContainer,
 } from "recharts";
 import moment from "moment";
+import _ from "lodash";
+
 const CustomizedAxisTick = ({ x, y, stroke, payload }) => {
   return (
     // <g transform={`translate(${x},${y})`}>
@@ -22,7 +26,7 @@ const CustomizedAxisTick = ({ x, y, stroke, payload }) => {
       dx={-18}
       dy={16}
       // textAnchor="end"
-      fill="#666"
+      fill={"#666"}
       // transform="rotate(-35)"
     >
       {moment(payload.value).format("DD MMM")}
@@ -32,16 +36,10 @@ const CustomizedAxisTick = ({ x, y, stroke, payload }) => {
 };
 
 const DailyRatesPlot = ({ parsedData }) => {
-  useEffect(() => {
-    if (parsedData) parsedData.shift();
-  }, [parsedData]);
-
   if (parsedData) {
-    // parsedData.shift()
-
     return (
       <ResponsiveContainer width="100%" height={500}>
-        <BarChart
+        <ComposedChart
           data={parsedData}
           margin={{
             top: 10,
@@ -62,8 +60,11 @@ const DailyRatesPlot = ({ parsedData }) => {
                 case "newPeopleVaccinatedSecondDoseByPublishDate":
                   return "Second Dose";
 
+                case "sevenDaysRateSecond":
+                  return "Second Dose (7-day average)";
+
                 default:
-                  return "";
+                  return "First Dose (7-day average)";
               }
             }}
           />
@@ -100,6 +101,18 @@ const DailyRatesPlot = ({ parsedData }) => {
                     "Second Dose",
                   ];
 
+                case "sevenDaysRateSecond":
+                  return [
+                    new Intl.NumberFormat("en").format(value),
+                    "Second Dose (7-day average)",
+                  ];
+
+                case "sevenDaysRate":
+                  return [
+                    new Intl.NumberFormat("en").format(value),
+                    "First Dose (7-day average)",
+                  ];
+
                 default:
                   return [null, null];
               }
@@ -109,9 +122,22 @@ const DailyRatesPlot = ({ parsedData }) => {
             type="monotone"
             dataKey="newPeopleVaccinatedFirstDoseByPublishDate"
             stackId="1"
-            stroke="#8884d8"
             fill="#8884d8"
-          />
+            stroke="#8884d8"
+          >
+            {parsedData.map((entry, index) =>
+              moment(parsedData[index]["date"]).isoWeekday() === 6 ||
+              moment(parsedData[index]["date"]).isoWeekday() === 7 ? (
+                <Cell
+                  // stroke={"#089c19"}
+                  strokeWidth={4}
+                  strokeDasharray={[3, 3]}
+                />
+              ) : (
+                <Cell />
+              )
+            )}
+          </Bar>
           <Bar
             type="monotone"
             dataKey="newPeopleVaccinatedSecondDoseByPublishDate"
@@ -119,7 +145,21 @@ const DailyRatesPlot = ({ parsedData }) => {
             stroke="#82ca9d"
             fill="#82ca9d"
           />
-        </BarChart>
+          <Line
+            type="monotone"
+            dataKey="sevenDaysRate"
+            stroke="#ff7300"
+            strokeWidth={3}
+            dot={true}
+          />
+          <Line
+            type="monotone"
+            dataKey="sevenDaysRateSecond"
+            stroke="#81CA9C"
+            strokeWidth={2}
+            dot={true}
+          />
+        </ComposedChart>
       </ResponsiveContainer>
     );
   } else return null;

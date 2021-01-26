@@ -20,10 +20,23 @@ import VaccineStatistics from "./components/VaccineStatistics";
 import logo from "./assets/logo.png";
 import vaccination_json from "./data/vaccination-data.json";
 import moment from "moment";
+import _ from "lodash";
 
 function App() {
   const [parsedData, setParsedData] = useState(null);
   const [updateDate, setUpdateDate] = useState(null);
+
+  const computeAverageRate = (data, days, fromKey, toKey) => {
+    data.forEach((datum, index) => {
+      if (index >= 6) {
+        data[index][toKey] = _.mean(
+          data.slice(index - (days - 1), index + 1).map((a) => a[fromKey])
+        );
+      } else data[index][toKey] = null;
+    });
+
+    return data;
+  };
 
   // Load, convert, and sort data
   useEffect(() => {
@@ -34,10 +47,23 @@ function App() {
       return new Date(a.date) - new Date(b.date);
     });
 
-    setParsedData(rawData);
+    let parsedData = computeAverageRate(
+      rawData,
+      7,
+      "newPeopleVaccinatedFirstDoseByPublishDate",
+      "sevenDaysRate"
+    );
+    parsedData = computeAverageRate(
+      parsedData,
+      7,
+      "newPeopleVaccinatedSecondDoseByPublishDate",
+      "sevenDaysRateSecond"
+    );
+
+    setParsedData(parsedData);
 
     // Compute update date (assumed to be latest date in data + 1 day)
-    const latestDate = rawData[rawData.length - 1].date;
+    const latestDate = parsedData[parsedData.length - 1].date;
     setUpdateDate(moment(latestDate).add(1, "d").format("DD MMMM YYYY"));
   }, []);
 
@@ -121,7 +147,7 @@ function App() {
         <GenericContainer
           ChildComponent={<DailyRatesPlot parsedData={parsedData} />}
           title="Daily Vaccination Rates"
-          description="Daily vaccination rates for 1st and 2nd doses since 11 January 2021."
+          description="Daily vaccination rates for 1st and 2nd doses since 11 January 2021. Dashed contours indicate weekend days."
           dateUpdated={updateDate}
         />
       </Container>
