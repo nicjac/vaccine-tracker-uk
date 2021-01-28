@@ -1,0 +1,25 @@
+name: PHE Data Update
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_and_deploy:
+    env:
+      CI: false #Need for build (https://github.community/t/treating-warnings-as-errors-because-process-env-ci-true/18032/8)
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup Node
+      uses: actions/setup-node@v2
+      with:
+        node-version: '12'
+    - name: Install and deploy
+      run: |
+        git config --global 'credential.https://github.com' '!gh auth git-credential'
+        npm install
+        npm run deploy
