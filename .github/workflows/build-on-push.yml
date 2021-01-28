@@ -22,6 +22,6 @@ jobs:
       run: |
         git config --global user.email "hello@vaccine-tracker.uk"
         git config --global user.name "vaccine-tracker-uk-ci-cd"
-        git config --global 'credential.https://github.com' '!gh auth git-credential'
+        GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} git config --global 'credential.https://github.com' '!gh auth git-credential'
         npm install
         npm run deploy
