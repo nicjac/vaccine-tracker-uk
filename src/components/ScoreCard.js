@@ -27,6 +27,11 @@ const ScoreCard = ({ parsedData, targetDate, targetIndividuals, title }) => {
 
       data[index]["deltaTargetVsPredicted"] =
         data[index]["daysToTarget"] - data[index]["predictedDaysToTarget"];
+
+      console.log(data[index]["deltaTargetVsPredicted"]);
+      data[index]["predictedDate"] = moment(targetDate)
+        .add(-1 * data[index]["deltaTargetVsPredicted"], "days")
+        .format("DD MMMM YYYY");
     });
 
     return data;
@@ -66,15 +71,15 @@ const ScoreCard = ({ parsedData, targetDate, targetIndividuals, title }) => {
               textAlign: "center",
             }}
           >
-            Predicted to miss target by &nbsp;
             <b>
               {Math.abs(
                 Math.round(
                   transformedData[latestIndex]["deltaTargetVsPredicted"]
                 )
               )}
-              &nbsp; days
+              &nbsp; days late
             </b>
+            <p>({transformedData[latestIndex]["predictedDate"]})</p>
           </div>
         </Fragment>
       );
@@ -98,13 +103,13 @@ const ScoreCard = ({ parsedData, targetDate, targetIndividuals, title }) => {
               textAlign: "center",
             }}
           >
-            Predicted to hit target early by &nbsp;
             <b>
               {Math.round(
                 Math.abs(transformedData[latestIndex]["deltaTargetVsPredicted"])
               )}
-              &nbsp; days
+              &nbsp; days early
             </b>
+            <p>({transformedData[latestIndex]["predictedDate"]})</p>
           </div>
         </Fragment>
       );
