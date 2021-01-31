@@ -46,7 +46,9 @@ const ScoreCard = ({ parsedData, targetDate, targetIndividuals, title }) => {
     let progressContent;
     const latestIndex = transformedData.length - 1;
 
-    if (transformedData[latestIndex]["deltaTargetVsPredicted"] < 0) {
+    if (
+      Math.round(transformedData[latestIndex]["deltaTargetVsPredicted"]) < 0
+    ) {
       progressContent = (
         <Fragment>
           <Icon
@@ -76,7 +78,9 @@ const ScoreCard = ({ parsedData, targetDate, targetIndividuals, title }) => {
           </div>
         </Fragment>
       );
-    } else if (transformedData[latestIndex]["deltaTargetVsPredicted"] > 0) {
+    } else if (
+      Math.round(transformedData[latestIndex]["deltaTargetVsPredicted"]) > 0
+    ) {
       progressContent = (
         <Fragment>
           <Icon
