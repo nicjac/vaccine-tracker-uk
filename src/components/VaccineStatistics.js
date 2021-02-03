@@ -4,108 +4,321 @@ import _ from "lodash";
 
 const VaccineStatistics = ({ parsedData }) => {
   const [loaded, setLoaded] = useState(null);
-  const [firstDoseStatistic, setFirstDoseStatistic] = useState(null);
-  const [secondDoseStatistic, setSecondDoseStatistic] = useState(null);
-  const [allDoseStatistic, setAllDoseStatistic] = useState(null);
-  const [sevenDaysRate, setSevenDaysRate] = useState(null);
+
+  const [allDosesStatistics, setAllDosesStatistics] = useState(null);
+  const [firstDosesStatistics, setFirstDosesStatistics] = useState(null);
+  const [secondDosesStatistics, setSecondDosesStatistics] = useState(null);
 
   useEffect(() => {
     if (parsedData) {
-      console.log(parsedData);
-      setFirstDoseStatistic(
-        parseInt(
-          parsedData[parsedData.length - 1][
-            "cumPeopleVaccinatedFirstDoseByPublishDate"
-          ]
-        )
-      );
+      const latestIndex = parsedData.length - 1;
 
-      setSecondDoseStatistic(
-        parseInt(
-          parsedData[parsedData.length - 1][
+      setAllDosesStatistics({
+        total:
+          parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"] +
+          parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"],
+        new:
+          parsedData[latestIndex]["newPeopleVaccinatedFirstDoseByPublishDate"] +
+          parsedData[latestIndex]["newPeopleVaccinatedSecondDoseByPublishDate"],
+        dayOnDay:
+          (parsedData[latestIndex][
+            "newPeopleVaccinatedFirstDoseByPublishDate"
+          ] +
+            parsedData[latestIndex][
+              "newPeopleVaccinatedSecondDoseByPublishDate"
+            ]) /
+            (parsedData[latestIndex - 1][
+              "newPeopleVaccinatedFirstDoseByPublishDate"
+            ] +
+              parsedData[latestIndex - 1][
+                "newPeopleVaccinatedSecondDoseByPublishDate"
+              ]) -
+          1,
+        weekOnWeek:
+          (parsedData[latestIndex][
+            "newPeopleVaccinatedFirstDoseByPublishDate"
+          ] +
+            parsedData[latestIndex][
+              "newPeopleVaccinatedSecondDoseByPublishDate"
+            ]) /
+            (parsedData[latestIndex - 7][
+              "newPeopleVaccinatedFirstDoseByPublishDate"
+            ] +
+              parsedData[latestIndex - 7][
+                "newPeopleVaccinatedSecondDoseByPublishDate"
+              ]) -
+          1,
+        completedCourses:
+          parsedData[latestIndex][
             "cumPeopleVaccinatedSecondDoseByPublishDate"
-          ]
-        )
-      );
+          ] /
+          parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"],
+      });
 
-      setAllDoseStatistic(
-        parseInt(
-          parsedData[parsedData.length - 1][
+      setFirstDosesStatistics({
+        total:
+          parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"],
+        new:
+          parsedData[latestIndex]["newPeopleVaccinatedFirstDoseByPublishDate"],
+        dayOnDay:
+          parsedData[latestIndex]["newPeopleVaccinatedFirstDoseByPublishDate"] /
+            parsedData[latestIndex - 1][
+              "newPeopleVaccinatedFirstDoseByPublishDate"
+            ] -
+          1,
+        weekOnWeek:
+          parsedData[latestIndex]["newPeopleVaccinatedFirstDoseByPublishDate"] /
+            parsedData[latestIndex - 7][
+              "newPeopleVaccinatedFirstDoseByPublishDate"
+            ] -
+          1,
+        sevenDaysRate: parsedData[latestIndex]["sevenDaysRate"],
+        sevenDaysRateDeltaDay:
+          parsedData[latestIndex]["sevenDaysRate"] /
+            parsedData[latestIndex - 1]["sevenDaysRate"] -
+          1,
+        adultPopulationDone:
+          parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"] /
+          53000000,
+        priorityGroupsDone:
+          parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"] /
+          32000000,
+      });
+
+      setSecondDosesStatistics({
+        total:
+          parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"],
+        new:
+          parsedData[latestIndex]["newPeopleVaccinatedSecondDoseByPublishDate"],
+        dayOnDay:
+          parsedData[latestIndex][
+            "newPeopleVaccinatedSecondDoseByPublishDate"
+          ] /
+            parsedData[latestIndex - 1][
+              "newPeopleVaccinatedSecondDoseByPublishDate"
+            ] -
+          1,
+        weekOnWeek:
+          parsedData[latestIndex][
+            "newPeopleVaccinatedSecondDoseByPublishDate"
+          ] /
+            parsedData[latestIndex - 7][
+              "newPeopleVaccinatedSecondDoseByPublishDate"
+            ] -
+          1,
+        sevenDaysRate: parsedData[latestIndex]["sevenDaysRateSecond"],
+        sevenDaysRateDeltaDay:
+          parsedData[latestIndex]["sevenDaysRateSecond"] /
+            parsedData[latestIndex - 1]["sevenDaysRateSecond"] -
+          1,
+        adultPopulationDone:
+          parsedData[latestIndex][
             "cumPeopleVaccinatedSecondDoseByPublishDate"
-          ]
-        ) +
-          parseInt(
-            parsedData[parsedData.length - 1][
-              "cumPeopleVaccinatedFirstDoseByPublishDate"
-            ]
-          )
-      );
-
-      let sevenDaysRates = parsedData
-        .slice(parsedData.length - 7, parsedData.length)
-        .map((a) => a["newPeopleVaccinatedFirstDoseByPublishDate"]);
-      const sevenDaysRate_ = _.mean(sevenDaysRates);
-      setSevenDaysRate(sevenDaysRate_);
-
+          ] / 53000000,
+        priorityGroupsDone:
+          parsedData[latestIndex][
+            "cumPeopleVaccinatedSecondDoseByPublishDate"
+          ] / 32000000,
+      });
       setLoaded(true);
     }
   }, [parsedData]);
 
   if (loaded)
     return (
-      <Grid centered>
+      <Grid>
         <Grid.Row>
           <Segment basic>
-            <Header as="h4" dividing>
-              <Icon name="numbered list" />
-              <Header.Content>Number of doses</Header.Content>
+            <Header as="h4" dividing textAlign="left">
+              <Header.Content>1️⃣ + 2️⃣ All Doses</Header.Content>
             </Header>
-            <Statistic.Group size="small" style={{ textAlign: "center" }}>
+            <Statistic.Group size="tiny" style={{ textAlign: "center" }}>
               <Statistic>
                 <Statistic.Value>
-                  {Intl.NumberFormat("en").format(allDoseStatistic)}
+                  {Intl.NumberFormat("en").format(allDosesStatistics.total)}
                 </Statistic.Value>
-                <Statistic.Label>💉 All Doses</Statistic.Label>
+                <Statistic.Label>Cumulative</Statistic.Label>
               </Statistic>
               <Statistic>
                 <Statistic.Value>
-                  {Intl.NumberFormat("en").format(firstDoseStatistic)}
+                  {Intl.NumberFormat("en").format(allDosesStatistics.new)}
                 </Statistic.Value>
-                <Statistic.Label>1️⃣ First Doses</Statistic.Label>
+                <Statistic.Label>Daily Rate</Statistic.Label>
+              </Statistic>
+              <Statistic
+                color={allDosesStatistics.dayOnDay > 0 ? "green" : "red"}
+              >
+                <Statistic.Value>
+                  {allDosesStatistics.dayOnDay > 0 ? "+" : null}
+                  {Intl.NumberFormat("en").format(
+                    Math.round(allDosesStatistics.dayOnDay * 100)
+                  )}
+                  %
+                </Statistic.Value>
+                <Statistic.Label>Δ Day (Rate)</Statistic.Label>
+              </Statistic>
+              <Statistic
+                color={allDosesStatistics.weekOnWeek > 0 ? "green" : "red"}
+              >
+                <Statistic.Value>
+                  {allDosesStatistics.weekOnWeek > 0 ? "+" : null}
+                  {Intl.NumberFormat("en").format(
+                    Math.round(allDosesStatistics.weekOnWeek * 100)
+                  )}
+                  %
+                </Statistic.Value>
+                <Statistic.Label>Δ Week (Rate)</Statistic.Label>
               </Statistic>
               <Statistic>
                 <Statistic.Value>
-                  {Intl.NumberFormat("en").format(secondDoseStatistic)}
+                  {Intl.NumberFormat("en").format(
+                    Math.round(allDosesStatistics.completedCourses * 100)
+                  )}
+                  %
                 </Statistic.Value>
-                <Statistic.Label>2️⃣ Second Doses</Statistic.Label>
-              </Statistic>
-              <Statistic>
-                <Statistic.Value>
-                  {Intl.NumberFormat("en").format(Math.round(sevenDaysRate))}
-                </Statistic.Value>
-                <Statistic.Label>📈 7-day 1st doses rate</Statistic.Label>
+                <Statistic.Label>Completed Courses</Statistic.Label>
               </Statistic>
             </Statistic.Group>
           </Segment>
         </Grid.Row>
         <Grid.Row>
           <Segment basic>
-            <Header as="h4" dividing>
-              <Icon name="chart bar" />
-              <Header.Content>Distribution</Header.Content>
+            <Header as="h4" dividing dividing textAlign="left">
+              <Header.Content>1️⃣ First Doses</Header.Content>
             </Header>
-            <Statistic.Group size="small" style={{ textAlign: "center" }}>
+            <Statistic.Group size="tiny" style={{ textAlign: "center" }}>
               <Statistic>
                 <Statistic.Value>
-                  {((firstDoseStatistic / 53000000) * 100).toFixed(2)}%
+                  {Intl.NumberFormat("en").format(firstDosesStatistics.total)}
                 </Statistic.Value>
-                <Statistic.Label>Adult Population</Statistic.Label>
+                <Statistic.Label>Cumulative</Statistic.Label>
               </Statistic>
               <Statistic>
                 <Statistic.Value>
-                  {((firstDoseStatistic / 32000000) * 100).toFixed(2)}%
+                  {Intl.NumberFormat("en").format(firstDosesStatistics.new)}
                 </Statistic.Value>
-                <Statistic.Label>All Priority Groups</Statistic.Label>
+                <Statistic.Label>Daily Rate</Statistic.Label>
+              </Statistic>
+              <Statistic
+                color={firstDosesStatistics.dayOnDay > 0 ? "green" : "red"}
+              >
+                <Statistic.Value>
+                  {firstDosesStatistics.dayOnDay > 0 ? "+" : null}
+                  {Intl.NumberFormat("en").format(
+                    Math.round(firstDosesStatistics.dayOnDay * 100)
+                  )}
+                  %
+                </Statistic.Value>
+                <Statistic.Label>Δ Day (Rate)</Statistic.Label>
+              </Statistic>
+              <Statistic
+                color={firstDosesStatistics.weekOnWeek > 0 ? "green" : "red"}
+              >
+                <Statistic.Value>
+                  {firstDosesStatistics.weekOnWeek > 0 ? "+" : null}
+                  {Intl.NumberFormat("en").format(
+                    Math.round(firstDosesStatistics.weekOnWeek * 100)
+                  )}
+                  %
+                </Statistic.Value>
+                <Statistic.Label>Δ Week (Rate)</Statistic.Label>
+              </Statistic>
+              <Statistic>
+                <Statistic.Value>
+                  {Intl.NumberFormat("en").format(
+                    Math.round(firstDosesStatistics.sevenDaysRate)
+                  )}
+                </Statistic.Value>
+                <Statistic.Label>7-days average</Statistic.Label>
+              </Statistic>
+              <Statistic>
+                <Statistic.Value>
+                  {Intl.NumberFormat("en").format(
+                    Math.round(firstDosesStatistics.adultPopulationDone * 100)
+                  )}
+                  %
+                </Statistic.Value>
+                <Statistic.Label>Adults (53M)</Statistic.Label>
+              </Statistic>
+              <Statistic>
+                <Statistic.Value>
+                  {Intl.NumberFormat("en").format(
+                    Math.round(firstDosesStatistics.adultPopulationDone * 100)
+                  )}
+                  %
+                </Statistic.Value>
+                <Statistic.Label>Priority Groups (32M)</Statistic.Label>
+              </Statistic>
+            </Statistic.Group>
+          </Segment>
+        </Grid.Row>
+        <Grid.Row>
+          <Segment basic>
+            <Header as="h4" dividing dividing textAlign="left">
+              <Header.Content>2️⃣ Second Doses</Header.Content>
+            </Header>
+            <Statistic.Group size="tiny" style={{ textAlign: "center" }}>
+              <Statistic>
+                <Statistic.Value>
+                  {Intl.NumberFormat("en").format(secondDosesStatistics.total)}
+                </Statistic.Value>
+                <Statistic.Label>Cumulative</Statistic.Label>
+              </Statistic>
+              <Statistic>
+                <Statistic.Value>
+                  {Intl.NumberFormat("en").format(secondDosesStatistics.new)}
+                </Statistic.Value>
+                <Statistic.Label>Daily Rate</Statistic.Label>
+              </Statistic>
+              <Statistic
+                color={secondDosesStatistics.dayOnDay > 0 ? "green" : "red"}
+              >
+                <Statistic.Value>
+                  {secondDosesStatistics.dayOnDay > 0 ? "+" : null}
+                  {Intl.NumberFormat("en").format(
+                    Math.round(secondDosesStatistics.dayOnDay * 100)
+                  )}
+                  %
+                </Statistic.Value>
+                <Statistic.Label>Δ Day (Rate)</Statistic.Label>
+              </Statistic>
+              <Statistic
+                color={secondDosesStatistics.weekOnWeek > 0 ? "green" : "red"}
+              >
+                <Statistic.Value>
+                  {secondDosesStatistics.weekOnWeek > 0 ? "+" : null}
+                  {Intl.NumberFormat("en").format(
+                    Math.round(secondDosesStatistics.weekOnWeek * 100)
+                  )}
+                  %
+                </Statistic.Value>
+                <Statistic.Label>Δ Week (Rate)</Statistic.Label>
+              </Statistic>
+              <Statistic>
+                <Statistic.Value>
+                  {Intl.NumberFormat("en").format(
+                    Math.round(secondDosesStatistics.sevenDaysRate)
+                  )}
+                </Statistic.Value>
+                <Statistic.Label>7-days average</Statistic.Label>
+              </Statistic>
+              <Statistic>
+                <Statistic.Value>
+                  {Intl.NumberFormat("en").format(
+                    Math.round(secondDosesStatistics.adultPopulationDone * 100)
+                  )}
+                  %
+                </Statistic.Value>
+                <Statistic.Label>Adults (53M)</Statistic.Label>
+              </Statistic>
+              <Statistic>
+                <Statistic.Value>
+                  {Intl.NumberFormat("en").format(
+                    Math.round(secondDosesStatistics.adultPopulationDone * 100)
+                  )}
+                  %
+                </Statistic.Value>
+                <Statistic.Label>Priority Groups (32M)</Statistic.Label>
               </Statistic>
             </Statistic.Group>
           </Segment>
