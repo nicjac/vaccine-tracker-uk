@@ -229,7 +229,7 @@ const VaccineStatistics = ({ parsedData }) => {
                     Math.round(firstDosesStatistics.sevenDaysRate)
                   )}
                 </Statistic.Value>
-                <Statistic.Label>7-days average</Statistic.Label>
+                <Statistic.Label>7-day average</Statistic.Label>
               </Statistic>
               <Statistic>
                 <Statistic.Value>
@@ -243,7 +243,7 @@ const VaccineStatistics = ({ parsedData }) => {
               <Statistic>
                 <Statistic.Value>
                   {Intl.NumberFormat("en").format(
-                    Math.round(firstDosesStatistics.adultPopulationDone * 100)
+                    Math.round(firstDosesStatistics.priorityGroupsDone * 100)
                   )}
                   %
                 </Statistic.Value>
@@ -300,7 +300,7 @@ const VaccineStatistics = ({ parsedData }) => {
                     Math.round(secondDosesStatistics.sevenDaysRate)
                   )}
                 </Statistic.Value>
-                <Statistic.Label>7-days average</Statistic.Label>
+                <Statistic.Label>7-day average</Statistic.Label>
               </Statistic>
               <Statistic>
                 <Statistic.Value>
@@ -314,7 +314,7 @@ const VaccineStatistics = ({ parsedData }) => {
               <Statistic>
                 <Statistic.Value>
                   {Intl.NumberFormat("en").format(
-                    Math.round(secondDosesStatistics.adultPopulationDone * 100)
+                    Math.round(secondDosesStatistics.priorityGroupsDone * 100)
                   )}
                   %
                 </Statistic.Value>
