@@ -51,9 +51,11 @@ const ScoreCard = ({ parsedData, targetDate, targetIndividuals, title }) => {
     let progressContent;
     const latestIndex = transformedData.length - 1;
 
-    if (
-      Math.round(transformedData[latestIndex]["deltaTargetVsPredicted"]) < 0
-    ) {
+    const delta = Math.round(
+      transformedData[latestIndex]["deltaTargetVsPredicted"]
+    );
+
+    if (delta < 0) {
       progressContent = (
         <Fragment>
           <Icon
@@ -72,20 +74,14 @@ const ScoreCard = ({ parsedData, targetDate, targetIndividuals, title }) => {
             }}
           >
             <b>
-              {Math.abs(
-                Math.round(
-                  transformedData[latestIndex]["deltaTargetVsPredicted"]
-                )
-              )}
-              &nbsp; days late
+              {Math.abs(delta)}
+              &nbsp; {Math.abs(delta) === 1 ? "day" : "days"} late
             </b>
             <p>({transformedData[latestIndex]["predictedDate"]})</p>
           </div>
         </Fragment>
       );
-    } else if (
-      Math.round(transformedData[latestIndex]["deltaTargetVsPredicted"]) > 0
-    ) {
+    } else if (delta > 0) {
       progressContent = (
         <Fragment>
           <Icon
@@ -104,10 +100,8 @@ const ScoreCard = ({ parsedData, targetDate, targetIndividuals, title }) => {
             }}
           >
             <b>
-              {Math.round(
-                Math.abs(transformedData[latestIndex]["deltaTargetVsPredicted"])
-              )}
-              &nbsp; days early
+              {Math.round(Math.abs(delta))}
+              &nbsp; {Math.abs(delta) === 1 ? "day" : "days"} early
             </b>
             <p>({transformedData[latestIndex]["predictedDate"]})</p>
           </div>
