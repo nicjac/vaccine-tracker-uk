@@ -112,7 +112,7 @@ function App() {
                 <a href="https://github.com/nicjac/vaccine-tracker-uk">
                   Github
                   <Icon name="github" />
-                  respository!
+                  repository!
                 </a>
               </List.Item>
             </List>
