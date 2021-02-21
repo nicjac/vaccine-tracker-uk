@@ -15,12 +15,12 @@ const ScoreCardGroup = ({ parsedData }) => {
   return (
     <Grid stackable centered columns={3}>
       <Grid.Row textAlign="center" centered>
-        <ScoreCard
+        {/* <ScoreCard
           parsedData={parsedData}
           targetDate={TARGET_4_TOP_PRIORITY_GROUPS_DATE}
           targetIndividuals={TARGET_4_TOP_PRIORITY_GROUPS_INDIVIDUALS}
           title="Top 4 Priority Groups"
-        />
+        /> */}
         <ScoreCard
           parsedData={parsedData}
           targetDate={TARGET_ALL_GROUPS_DATE}

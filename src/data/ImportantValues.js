@@ -4,4 +4,4 @@ export const TARGET_4_TOP_PRIORITY_GROUPS_INDIVIDUALS = 15000000;
 export const TARGET_ALL_GROUPS_DATE = "2021-04-15"; // https://www.instituteforgovernment.org.uk/explainers/coronavirus-vaccine-rollout
 export const TARGET_ALL_GROUPS_INDIVIDUALS = 32000000;
 export const TARGET_ADULT_POPULATION_INDIVIDUALS = 53000000;
-export const TARGET_ADULT_POPULATION_DATE = "2021-09-21"; // Estimate based on annoucement (https://www.instituteforgovernment.org.uk/explainers/coronavirus-vaccine-rollout)
+export const TARGET_ADULT_POPULATION_DATE = "2021-07-31"; // Based on new target https://news.sky.com/story/covid-19-all-adults-to-be-offered-vaccine-by-end-of-july-under-pms-accelerated-plan-12224309

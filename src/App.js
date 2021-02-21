@@ -14,7 +14,9 @@ import StackedVaccinationPlot from "./components/StackedVaccinationPlot";
 import VaccinationProgressPlot from "./components/VaccinationProgressPlot";
 import DailyRatesPlot from "./components/DailyRatesPlot";
 import GenericContainer from "./components/GenericContainer";
+import ScoreCardGroupWithDebt from "./components/ScoreCardGroupWithDebt";
 import ScoreCardGroup from "./components/ScoreCardGroup";
+
 import VaccineStatistics from "./components/VaccineStatistics";
 import SecondDoseDebt from "./components/SecondDoseDebt";
 
@@ -39,6 +41,20 @@ function App() {
     return data;
   };
 
+  // const computeAverageRateDual = (data, days, fromKey, toKey) => {
+  //   data.forEach((datum, index) => {
+  //     if (index >= 6) {
+  //       data[index][toKey] = _.mean(
+  //         data
+  //           .slice(index - (days - 1), index + 1)
+  //           .map((a) => a[fromKey[0]] + a[fromKey[1]])
+  //       );
+  //     } else data[index][toKey] = null;
+  //   });
+
+  //   return data;
+  // };
+
   // Load, convert, and sort data
   useEffect(() => {
     let rawData = vaccination_json.data;
@@ -60,6 +76,15 @@ function App() {
       "newPeopleVaccinatedSecondDoseByPublishDate",
       "sevenDaysRateSecond"
     );
+    // parsedData = computeAverageRateDual(
+    //   parsedData,
+    //   7,
+    //   [
+    //     "newPeopleVaccinatedSecondDoseByPublishDate",
+    //     "newPeopleVaccinatedFirstDoseByPublishDate",
+    //   ],
+    //   "sevenDaysRateCombined"
+    // );
 
     setParsedData(parsedData);
 
@@ -133,24 +158,31 @@ function App() {
           dateUpdated={updateDate}
         /> */}
         <GenericContainer
+          ChildComponent={<ScoreCardGroupWithDebt parsedData={parsedData} />}
+          title="Government Target Scorecard (Second Doses Debt Model)"
+          description="Keeping track of the government targets. The dates and number of individuals are based on the UK COVID-19 Delivery Plan and the explainer by the Institute For Government. These predictions take into account the impact of the second doses debt. It is assumed that the rate is constant (equal to the last 7-day average for 1st and 2nd doses).
+          A strict 12-week delay is introduced between 1st and 2nd doses. 2nd doses always take priority."
+          dateUpdated={updateDate}
+        />
+        {/* <GenericContainer
           ChildComponent={<ScoreCardGroup parsedData={parsedData} />}
           title="Government Target Scorecard"
           description="Keeping track of the government targets. The dates and number of individuals are based on the UK COVID-19 Delivery Plan and the explainer by the Institute For Government. Prediction based on a 7-day vaccination rate average. The bar plots show deviation from target over time."
           dateUpdated={updateDate}
-        />
+        /> */}
         <GenericContainer
           ChildComponent={<VaccinationProgressPlot parsedData={parsedData} />}
           title="Rollout Tracker"
           description="Breakdown of the overall COVID vaccine rollout in the UK for 1st and 2nd doses."
           dateUpdated={updateDate}
         />
-        <GenericContainer
+        {/* <GenericContainer
           ChildComponent={<StackedVaccinationPlot parsedData={parsedData} />}
           title="Cumulative Doses Administered Over Time"
           description="Cumulative first and second doses administered since 11 January
           2021."
           dateUpdated={updateDate}
-        />
+        /> */}
         <GenericContainer
           ChildComponent={<DailyRatesPlot parsedData={parsedData} />}
           title="Daily Vaccination Rates"
