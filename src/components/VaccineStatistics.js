@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Statistic, Segment, Grid, Header, Icon } from "semantic-ui-react";
+import {
+  Statistic,
+  Segment,
+  Grid,
+  Header,
+  Icon,
+  Card,
+} from "semantic-ui-react";
 import _ from "lodash";
 
 const VaccineStatistics = ({ parsedData }) => {

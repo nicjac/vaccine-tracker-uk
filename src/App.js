@@ -8,7 +8,10 @@ import {
   Image,
   Segment,
   Icon,
+  Card,
   List,
+  Statistic,
+  Message,
 } from "semantic-ui-react";
 import StackedVaccinationPlot from "./components/StackedVaccinationPlot";
 import VaccinationProgressPlot from "./components/VaccinationProgressPlot";
@@ -17,7 +20,7 @@ import GenericContainer from "./components/GenericContainer";
 import ScoreCardGroupWithDebt from "./components/ScoreCardGroupWithDebt";
 import ScoreCardGroup from "./components/ScoreCardGroup";
 
-import VaccineStatistics from "./components/VaccineStatistics";
+import VaccineStatisticsCompact from "./components/VaccineStatisticsCompact";
 import SecondDoseDebt from "./components/SecondDoseDebt";
 
 import logo from "./assets/logo.png";
@@ -103,8 +106,18 @@ function App() {
             Visualisations to make sense of UK's COVID vaccine rollout
           </Header.Subheader>
         </Header>
-
-        <Segment padded="very" raised size="large">
+        <Message info>
+          <Message.Header>Last Updated: {updateDate}</Message.Header>
+          <p>
+            This website is updated daily around 4pm BST (if delayed, check our{" "}
+            <a href="https://twitter.com/VaccineStatusUK">
+              Twitter <Icon name="twitter" />
+              account
+            </a>{" "}
+            for more information)
+          </p>
+        </Message>
+        <Segment raised size="large">
           <Header as="h2" dividing>
             <Icon name="question circle" />
             <Header.Content>
@@ -120,6 +133,10 @@ function App() {
             rollout programme.
             <br />
             <List bulleted size="medium">
+              <List.Item>
+                This website is best viewed on a desktop, though we are doing
+                our best to make it work as well as possible on mobile devices.
+              </List.Item>
               <List.Item>
                 Data kindly provided by{" "}
                 <a href="https://coronavirus.data.gov.uk/">
@@ -146,8 +163,8 @@ function App() {
         </Segment>
 
         <GenericContainer
-          ChildComponent={<VaccineStatistics parsedData={parsedData} />}
-          title="Key Numbers"
+          ChildComponent={<VaccineStatisticsCompact parsedData={parsedData} />}
+          title="Rollout Dashboard"
           description="Key numbers related to the vaccination programme."
           dateUpdated={updateDate}
         />
