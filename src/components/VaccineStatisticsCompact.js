@@ -603,6 +603,7 @@ const VaccineStatisticsCompact = ({ parsedData }) => {
                     data:
                       item["cumPeopleVaccinatedFirstDoseByPublishDate"] +
                       item["cumPeopleVaccinatedSecondDoseByPublishDate"],
+                    date: item["date"],
                   };
                 })}
               />
@@ -619,6 +620,7 @@ const VaccineStatisticsCompact = ({ parsedData }) => {
                 dataToPlot={parsedData.map((item) => {
                   return {
                     data: item["newPeopleVaccinatedFirstDoseByPublishDate"],
+                    date: item["date"],
                   };
                 })}
               />
@@ -639,6 +641,7 @@ const VaccineStatisticsCompact = ({ parsedData }) => {
                 dataToPlot={parsedData.map((item) => {
                   return {
                     data: item["sevenDaysRate"] + item["sevenDaysRateSecond"],
+                    date: item["date"],
                   };
                 })}
               />
@@ -664,6 +667,7 @@ const VaccineStatisticsCompact = ({ parsedData }) => {
                 dataToPlot={parsedData.map((item) => {
                   return {
                     data: item["cumPeopleVaccinatedFirstDoseByPublishDate"],
+                    date: item["date"],
                   };
                 })}
               />
@@ -680,6 +684,7 @@ const VaccineStatisticsCompact = ({ parsedData }) => {
                 dataToPlot={parsedData.map((item) => {
                   return {
                     data: item["newPeopleVaccinatedFirstDoseByPublishDate"],
+                    date: item["date"],
                   };
                 })}
               />
@@ -700,6 +705,7 @@ const VaccineStatisticsCompact = ({ parsedData }) => {
                 dataToPlot={parsedData.map((item) => {
                   return {
                     data: item["sevenDaysRate"],
+                    date: item["date"],
                   };
                 })}
               />
@@ -725,6 +731,7 @@ const VaccineStatisticsCompact = ({ parsedData }) => {
                 dataToPlot={parsedData.map((item) => {
                   return {
                     data: item["cumPeopleVaccinatedSecondDoseByPublishDate"],
+                    date: item["date"],
                   };
                 })}
               />
@@ -741,6 +748,7 @@ const VaccineStatisticsCompact = ({ parsedData }) => {
                 dataToPlot={parsedData.map((item) => {
                   return {
                     data: item["newPeopleVaccinatedSecondDoseByPublishDate"],
+                    date: item["date"],
                   };
                 })}
               />
@@ -761,6 +769,7 @@ const VaccineStatisticsCompact = ({ parsedData }) => {
                 dataToPlot={parsedData.map((item) => {
                   return {
                     data: item["sevenDaysRateSecond"],
+                    date: item["date"],
                   };
                 })}
               />

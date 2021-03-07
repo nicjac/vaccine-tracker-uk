@@ -89,7 +89,9 @@ const VaccineStatisticsCompactCard = ({
 
   const getPlot = () => {
     if (dataToPlot) {
-      dataToPlot = dataToPlot.filter((item) => item.data != null);
+      dataToPlot = dataToPlot.filter(
+        (item) => item.data != null && item.data != 0
+      );
 
       return (
         <BarChart
@@ -103,7 +105,12 @@ const VaccineStatisticsCompactCard = ({
             bottom: 0,
           }}
         >
-          <Tooltip />
+          <XAxis dataKey="date" hide={true} />
+          <Tooltip
+            formatter={(value, name) => {
+              return [new Intl.NumberFormat("en").format(value)];
+            }}
+          />
           <Bar type="monotone" dataKey="data" fill="#8884d8" />
         </BarChart>
       );
