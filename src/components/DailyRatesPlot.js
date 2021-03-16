@@ -38,7 +38,7 @@ const CustomizedAxisTick = ({ x, y, stroke, payload }) => {
 const DailyRatesPlot = ({ parsedData }) => {
   if (parsedData) {
     return (
-      <ResponsiveContainer width="100%" height={500}>
+      <ResponsiveContainer width="100%" aspect={2.5}>
         <ComposedChart
           data={parsedData}
           margin={{

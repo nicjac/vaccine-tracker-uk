@@ -10,17 +10,24 @@ const ScoreCardWithDebt = ({
   targetDate,
   targetIndividuals,
   title,
+  doseType,
 }) => {
   const [eventDay, setEventDay] = useState(null);
+  const [dosesColumn, setDosesColumn] = useState(null);
 
   useEffect(() => {
     if (debtData) {
-      const eventDay_ = debtData.find(
-        (datum) => datum.cumFirstDoses >= targetIndividuals
-      );
-
-      setEventDay(eventDay_);
-      console.log(eventDay_);
+      if (doseType == "first") {
+        setEventDay(
+          debtData.find((datum) => datum.cumFirstDoses >= targetIndividuals)
+        );
+        setDosesColumn("cumPeopleVaccinatedFirstDoseByPublishDate");
+      } else {
+        setEventDay(
+          debtData.find((datum) => datum.cumSecondDoses >= targetIndividuals)
+        );
+        setDosesColumn("cumPeopleVaccinatedSecondDoseByPublishDate");
+      }
     }
   }, [debtData]);
 
@@ -31,7 +38,23 @@ const ScoreCardWithDebt = ({
       moment(eventDay.date).diff(moment(targetDate), "days")
     );
 
-    if (delta > 0) {
+    if (!targetDate) {
+      progressContent = (
+        <Fragment>
+          <div
+            style={{
+              marginTop: -5,
+              fontSize: 14,
+              marginLeft: 25,
+              marginRight: 25,
+              textAlign: "center",
+            }}
+          >
+            <b>{moment(eventDay.date).format("DD MMMM")}</b>
+          </div>
+        </Fragment>
+      );
+    } else if (delta > 0) {
       progressContent = (
         <Fragment>
           <Icon
@@ -108,7 +131,7 @@ const ScoreCardWithDebt = ({
     }
 
     return (
-      <Grid.Column width={5} textAlign="center">
+      <Grid.Column width={4} textAlign="center">
         <Grid centered>
           <Segment
             basic
@@ -125,9 +148,7 @@ const ScoreCardWithDebt = ({
             </Header>
             <CircularProgressbarWithChildren
               value={
-                (parsedData[parsedData.length - 1][
-                  "cumPeopleVaccinatedFirstDoseByPublishDate"
-                ] /
+                (parsedData[parsedData.length - 1][dosesColumn] /
                   targetIndividuals) *
                 100
               }

@@ -8,9 +8,7 @@ import {
   Image,
   Segment,
   Icon,
-  Card,
   List,
-  Statistic,
   Message,
 } from "semantic-ui-react";
 import StackedVaccinationPlot from "./components/StackedVaccinationPlot";
@@ -26,37 +24,15 @@ import SecondDoseDebt from "./components/SecondDoseDebt";
 import logo from "./assets/logo.png";
 import vaccination_json from "./data/vaccination-data.json";
 import moment from "moment";
-import _ from "lodash";
+import { computeAverageRate, convertToWeeklyData } from "./utils/compute_utils";
+import PredictedTimeline from "./components/PredictedTimeline";
 
 function App() {
   const [parsedData, setParsedData] = useState(null);
   const [updateDate, setUpdateDate] = useState(null);
-
-  const computeAverageRate = (data, days, fromKey, toKey) => {
-    data.forEach((datum, index) => {
-      if (index >= 6) {
-        data[index][toKey] = _.mean(
-          data.slice(index - (days - 1), index + 1).map((a) => a[fromKey])
-        );
-      } else data[index][toKey] = null;
-    });
-
-    return data;
-  };
-
-  // const computeAverageRateDual = (data, days, fromKey, toKey) => {
-  //   data.forEach((datum, index) => {
-  //     if (index >= 6) {
-  //       data[index][toKey] = _.mean(
-  //         data
-  //           .slice(index - (days - 1), index + 1)
-  //           .map((a) => a[fromKey[0]] + a[fromKey[1]])
-  //       );
-  //     } else data[index][toKey] = null;
-  //   });
-
-  //   return data;
-  // };
+  const [debtData, setDebtData] = useState(null);
+  const [weeklyDebtData, setWeeklyDebtData] = useState(null);
+  const [rateForPredictions, setRateForPredictions] = useState(null);
 
   // Load, convert, and sort data
   useEffect(() => {
@@ -79,15 +55,6 @@ function App() {
       "newPeopleVaccinatedSecondDoseByPublishDate",
       "sevenDaysRateSecond"
     );
-    // parsedData = computeAverageRateDual(
-    //   parsedData,
-    //   7,
-    //   [
-    //     "newPeopleVaccinatedSecondDoseByPublishDate",
-    //     "newPeopleVaccinatedFirstDoseByPublishDate",
-    //   ],
-    //   "sevenDaysRateCombined"
-    // );
 
     setParsedData(parsedData);
 
@@ -95,6 +62,116 @@ function App() {
     const latestDate = parsedData[parsedData.length - 1].date;
     setUpdateDate(moment(latestDate).add(1, "d").format("DD MMMM YYYY"));
   }, []);
+
+  useEffect(() => {
+    if (parsedData) {
+      const RATE =
+        parsedData[parsedData.length - 1].sevenDaysRate +
+        parsedData[parsedData.length - 1].sevenDaysRateSecond;
+      const debtData_ = {};
+
+      const startDate = moment(parsedData[parsedData.length - 1].date).add(
+        1,
+        "days"
+      );
+
+      for (let i = 0; i < 240; i++) {
+        debtData_[moment(startDate).add(i, "days").format("YYYY-MM-DD")] = {
+          date: moment(startDate).add(i, "days").format("YYYY-MM-DD"),
+          secondDosesDone: 0,
+          firstDosesDone: 0,
+          secondDosesCarryOverFromPreviousDay: 0,
+          secondDosesNewFromDay: 0,
+          spareCapacity: 0,
+          secondDosesDue: 0,
+          cumFirstDoses: 0,
+          cumSecondDoses: 0,
+          week: moment(moment(startDate).add(i, "days")).week(),
+        };
+      }
+
+      let keys = Object.keys(debtData_);
+      const endDate = keys[keys.length - 1];
+
+      // Project initial data forward
+      parsedData.map((datum) => {
+        let targetDate = moment(datum["date"])
+          .add(12, "weeks")
+          .format("YYYY-MM-DD");
+
+        debtData_[targetDate].secondDosesDue +=
+          datum.newPeopleVaccinatedFirstDoseByPublishDate;
+      });
+
+      let carryOver = 0;
+      let cumFirstDoses =
+        parsedData[parsedData.length - 1]
+          .cumPeopleVaccinatedFirstDoseByPublishDate;
+      let cumSecondDoses =
+        parsedData[parsedData.length - 1]
+          .cumPeopleVaccinatedSecondDoseByPublishDate;
+
+      const maxDoses = 53000000;
+      const allDosesRate = RATE;
+
+      setRateForPredictions(allDosesRate);
+
+      Object.entries(debtData_).forEach((entry) => {
+        const [key, value] = entry;
+
+        let secondDosesDue = value.secondDosesDue + carryOver;
+
+        let secondDosesDone = 0;
+        let firstDosesDone = 0;
+
+        // If all first doses done --> prioritize second doses
+        if (cumFirstDoses >= maxDoses && cumSecondDoses <= maxDoses) {
+          secondDosesDone = allDosesRate;
+        } else if (cumSecondDoses <= maxDoses) {
+          // If more doses due that the rate
+          // --> second doses done are equal to the rate
+          if (secondDosesDue > allDosesRate) {
+            secondDosesDone = allDosesRate;
+          } else {
+            secondDosesDone = secondDosesDue;
+          }
+        }
+
+        carryOver = Math.max(secondDosesDue - secondDosesDone, 0);
+
+        let spareCapacity = Math.max(allDosesRate - secondDosesDone, 0);
+
+        if (spareCapacity > 0 && cumFirstDoses <= maxDoses) {
+          firstDosesDone = spareCapacity;
+
+          let targetDate = moment(value.date)
+            .add(12, "weeks")
+            .format("YYYY-MM-DD");
+
+          if (targetDate in debtData_)
+            debtData_[targetDate].secondDosesDue += firstDosesDone;
+          else console.log(targetDate);
+        }
+
+        cumFirstDoses = cumFirstDoses + firstDosesDone;
+        cumSecondDoses = cumSecondDoses + secondDosesDone;
+
+        value.firstDosesDone = firstDosesDone;
+        value.secondDosesDone = secondDosesDone;
+        value.cumFirstDoses = cumFirstDoses;
+        value.cumSecondDoses = cumSecondDoses;
+      });
+
+      const debtDataToPlot = [];
+
+      for (const [key, value] of Object.entries(debtData_)) {
+        debtDataToPlot.push(value);
+      }
+
+      setDebtData(debtDataToPlot);
+      setWeeklyDebtData(convertToWeeklyData(debtDataToPlot));
+    }
+  }, [parsedData]);
 
   return (
     <div className="App">
@@ -162,37 +239,74 @@ function App() {
           </Segment>
         </Segment>
 
+        <PredictedTimeline parsedData={parsedData} debtData={debtData} />
+
+        <Header as={"h2"}>
+          <Header.Content>📊 Data Analysis and Visualisations</Header.Content>
+          <Header.Subheader>
+            Data exploration, statistics, and visualisations solely based on
+            historical data. No predictions or projections involved.
+          </Header.Subheader>
+        </Header>
         <GenericContainer
           ChildComponent={<VaccineStatisticsCompact parsedData={parsedData} />}
           title="Rollout Dashboard"
           description="Key numbers related to the vaccination programme."
           dateUpdated={updateDate}
         />
-        {/* <GenericContainer
-          ChildComponent={<SecondDoseDebt parsedData={parsedData} />}
-          title="Second Doses Debt"
-          description="Visualisations related to the so-called second doses debt, in other words the number of second doses that will have to be administered to complete full courses of vaccination. The area plot on the left-hande side shows what the debt might look like and was generated by adding a 12-weeks delay from 1st doses."
-          dateUpdated={updateDate}
-        /> */}
-        <GenericContainer
-          ChildComponent={<ScoreCardGroupWithDebt parsedData={parsedData} />}
-          title="Government Target Scorecard (Second Doses Debt Model)"
-          description="Keeping track of the government targets. The dates and number of individuals are based on the UK COVID-19 Delivery Plan and the explainer by the Institute For Government. These predictions take into account the impact of the second doses debt. It is assumed that the rate is constant (equal to the last 7-day average for 1st and 2nd doses).
-          A strict 12-week delay is introduced between 1st and 2nd doses. 2nd doses always take priority."
-          dateUpdated={updateDate}
-        />
-        {/* <GenericContainer
-          ChildComponent={<ScoreCardGroup parsedData={parsedData} />}
-          title="Government Target Scorecard"
-          description="Keeping track of the government targets. The dates and number of individuals are based on the UK COVID-19 Delivery Plan and the explainer by the Institute For Government. Prediction based on a 7-day vaccination rate average. The bar plots show deviation from target over time."
-          dateUpdated={updateDate}
-        /> */}
         <GenericContainer
           ChildComponent={<VaccinationProgressPlot parsedData={parsedData} />}
           title="Rollout Tracker"
           description="Breakdown of the overall COVID vaccine rollout in the UK for 1st and 2nd doses."
           dateUpdated={updateDate}
         />
+        <GenericContainer
+          ChildComponent={<DailyRatesPlot parsedData={parsedData} />}
+          title="Daily Vaccination Rates"
+          description="Daily vaccination rates for 1st and 2nd doses since 11 January 2021. Dashed contours indicate weekend days."
+          dateUpdated={updateDate}
+        />
+        <Header as={"h2"}>
+          <Header.Content>🔮 Projections and Predictions</Header.Content>
+          <Header.Subheader>
+            Projections and predictions using various models and statistical
+            techniques. Those figures and visualisations are indicative only,
+            and are always subject to change when new data becomes available.
+          </Header.Subheader>
+        </Header>
+        <GenericContainer
+          ChildComponent={
+            <ScoreCardGroupWithDebt
+              parsedData={parsedData}
+              debtData={debtData}
+            />
+          }
+          title="Government Target Scorecard"
+          description="Keeping track of the government targets. The dates and number of individuals are based on the UK COVID-19 Delivery Plan and the explainer by the Institute For Government. These predictions take into account the impact of the second doses debt. It is assumed that the rate is constant (equal to the last 7-day average for 1st and 2nd doses).
+          A strict 12-week delay is introduced between 1st and 2nd doses. 2nd doses always take priority."
+          dateUpdated={updateDate}
+        />
+        <GenericContainer
+          ChildComponent={
+            <SecondDoseDebt
+              parsedData={parsedData}
+              debtData={debtData}
+              weeklyDebtData={weeklyDebtData}
+              rateForPredictions={rateForPredictions}
+            />
+          }
+          title="Projected Timeline"
+          description="Projected timeline taking into account the second doses debt. A strict 12-week delay is introduced between 1st and 2nd doses until all 1st doses are administered, after which 2nd doses are done as soon as possible regardless of the delay. 2nd doses always take priority."
+          dateUpdated={updateDate}
+        />
+
+        {/* <GenericContainer
+          ChildComponent={<ScoreCardGroup parsedData={parsedData} />}
+          title="Government Target Scorecard"
+          description="Keeping track of the government targets. The dates and number of individuals are based on the UK COVID-19 Delivery Plan and the explainer by the Institute For Government. Prediction based on a 7-day vaccination rate average. The bar plots show deviation from target over time."
+          dateUpdated={updateDate}
+        /> */}
+
         {/* <GenericContainer
           ChildComponent={<StackedVaccinationPlot parsedData={parsedData} />}
           title="Cumulative Doses Administered Over Time"
@@ -200,12 +314,6 @@ function App() {
           2021."
           dateUpdated={updateDate}
         /> */}
-        <GenericContainer
-          ChildComponent={<DailyRatesPlot parsedData={parsedData} />}
-          title="Daily Vaccination Rates"
-          description="Daily vaccination rates for 1st and 2nd doses since 11 January 2021. Dashed contours indicate weekend days."
-          dateUpdated={updateDate}
-        />
       </Container>
     </div>
   );

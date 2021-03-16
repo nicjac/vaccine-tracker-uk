@@ -426,8 +426,6 @@ const VaccineStatisticsCompact = ({ parsedData }) => {
     }
   }, [parsedData]);
 
-  console.log(allDosesStatistics);
-
   if (loaded)
     return (
       <Grid>
