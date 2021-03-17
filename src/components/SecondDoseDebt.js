@@ -105,8 +105,8 @@ const SecondDoseDebt = ({
                 new Intl.NumberFormat("en").format(value)
               }
             />
-            <Bar dataKey="firstDosesDone" stackId="a" fill="#82ca9d" />
-            <Bar dataKey="secondDosesDone" stackId="a" fill="#8884d8" />
+            <Bar dataKey="firstDosesDone" stackId="a" fill="#8884d8" />
+            <Bar dataKey="secondDosesDone" stackId="a" fill="#82ca9d" />
           </BarChart>
         </ResponsiveContainer>
         <Header as="h4">
@@ -186,13 +186,13 @@ const SecondDoseDebt = ({
             <Line
               dataKey="cumFirstDoses"
               dot={false}
-              stroke="#82ca9d"
+              stroke="#8884d8"
               strokeWidth={3}
             />
             <Line
               dataKey="cumSecondDoses"
               dot={false}
-              stroke="#8884d8"
+              stroke="#82ca9d"
               strokeWidth={3}
             />
           </LineChart>
