@@ -502,7 +502,7 @@ const VaccineStatisticsCompact = ({ parsedData }) => {
               <Card textAlign="left" compact>
                 <Card.Content>
                   <Card.Header>Priority Groups</Card.Header>
-                  <Card.Meta>53M individuals</Card.Meta>
+                  <Card.Meta>32M individuals</Card.Meta>
 
                   <Card.Description>
                     <Header as="h5" style={{ marginBottom: "2px" }}>
