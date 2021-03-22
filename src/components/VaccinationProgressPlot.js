@@ -39,7 +39,7 @@ const VaccinationProgressPlot = ({ parsedData }) => {
     const data = [parsedData[parsedData.length - 1]];
 
     return (
-      <ResponsiveContainer width={"100%"} height={180}>
+      <ResponsiveContainer width={"100%"} height={150}>
         <BarChart
           data={data}
           layout="vertical"
@@ -55,9 +55,11 @@ const VaccinationProgressPlot = ({ parsedData }) => {
           <YAxis type="category" domain={[0, 0]} tick={false} hide />
           <Legend
             verticalAlign="top"
-            height={50}
+            layout="horizontal"
+            height={20}
             align="center"
             wrapperStyle={{
+              top: 0,
               paddingLeft: "0px",
             }}
             formatter={(value, entry, index) => {
