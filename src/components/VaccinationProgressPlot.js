@@ -39,7 +39,7 @@ const VaccinationProgressPlot = ({ parsedData }) => {
     const data = [parsedData[parsedData.length - 1]];
 
     return (
-      <ResponsiveContainer width={"100%"} height={150}>
+      <ResponsiveContainer width={"100%"} height={135}>
         <BarChart
           data={data}
           layout="vertical"
@@ -80,12 +80,14 @@ const VaccinationProgressPlot = ({ parsedData }) => {
             fill="#8884d8"
             background={{ fill: "#eee" }}
             label={<CustomBarLabel />}
+            isAnimationActive={false}
           />
           <Bar
             dataKey="cumPeopleVaccinatedSecondDoseByPublishDate"
             fill="#82ca9d"
             background={{ fill: "#eee" }}
             label={<CustomBarLabel />}
+            isAnimationActive={false}
           />
           <ReferenceLine
             x={TARGET_4_TOP_PRIORITY_GROUPS_INDIVIDUALS}
