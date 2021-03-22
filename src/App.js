@@ -1,6 +1,5 @@
 import "./App.css";
 import "semantic-ui-css/semantic.min.css";
-
 import React, { useState, useEffect } from "react";
 import {
   Container,
@@ -10,14 +9,13 @@ import {
   Icon,
   List,
   Message,
+  Form,
+  Input,
 } from "semantic-ui-react";
-import StackedVaccinationPlot from "./components/StackedVaccinationPlot";
 import VaccinationProgressPlot from "./components/VaccinationProgressPlot";
 import DailyRatesPlot from "./components/DailyRatesPlot";
 import GenericContainer from "./components/GenericContainer";
 import ScoreCardGroupWithDebt from "./components/ScoreCardGroupWithDebt";
-import ScoreCardGroup from "./components/ScoreCardGroup";
-
 import VaccineStatisticsCompact from "./components/VaccineStatisticsCompact";
 import SecondDoseDebt from "./components/SecondDoseDebt";
 
@@ -26,13 +24,29 @@ import vaccination_json from "./data/vaccination-data.json";
 import moment from "moment";
 import { computeAverageRate, convertToWeeklyData } from "./utils/compute_utils";
 import PredictedTimeline from "./components/PredictedTimeline";
+import { useLocation } from "react-router-dom";
+import _ from "lodash";
 
 function App() {
+  const [showTweets, setShowTweets] = useState(false);
   const [parsedData, setParsedData] = useState(null);
   const [updateDate, setUpdateDate] = useState(null);
   const [debtData, setDebtData] = useState(null);
   const [weeklyDebtData, setWeeklyDebtData] = useState(null);
   const [rateForPredictions, setRateForPredictions] = useState(null);
+  const [currentRateForPredictions, setCurrentRateForPredictions] = useState(
+    null
+  );
+
+  let location = useLocation();
+
+  useEffect(() => {
+    let showTweetsParam = new URLSearchParams(location.search).get(
+      "showTweets"
+    );
+
+    if (showTweetsParam) setShowTweets(true);
+  }, [location]);
 
   // Load, convert, and sort data
   useEffect(() => {
@@ -75,6 +89,7 @@ function App() {
         "days"
       );
 
+      // Create structure to hold the debt data
       for (let i = 0; i < 240; i++) {
         debtData_[moment(startDate).add(i, "days").format("YYYY-MM-DD")] = {
           date: moment(startDate).add(i, "days").format("YYYY-MM-DD"),
@@ -89,9 +104,25 @@ function App() {
           week: moment(moment(startDate).add(i, "days")).week(),
         };
       }
-
       let keys = Object.keys(debtData_);
       const endDate = keys[keys.length - 1];
+
+      // Add 2nd doses data from before start of daily data releases
+      // Daily releases started on 2021-01-10
+      // Take the cumulative on
+      const SecondDosesToAdd = 2286572 - 391399;
+      const DaysDifference = Math.abs(
+        moment("2020-12-08").diff(moment("2021-01-09"), "days")
+      );
+      const SecondDosesToAddPerDay = SecondDosesToAdd / DaysDifference;
+
+      for (let i = 0; i <= DaysDifference; i++) {
+        let date = moment("2020-12-08").add(i, "days");
+        let targetDate = date.add(12, "weeks").format("YYYY-MM-DD");
+
+        if (debtData_[targetDate])
+          debtData_[targetDate].secondDosesDue += SecondDosesToAddPerDay;
+      }
 
       // Project initial data forward
       parsedData.map((datum) => {
@@ -112,9 +143,17 @@ function App() {
           .cumPeopleVaccinatedSecondDoseByPublishDate;
 
       const maxDoses = 53000000;
-      const allDosesRate = RATE;
 
-      setRateForPredictions(allDosesRate);
+      let allDosesRate;
+      if (rateForPredictions) allDosesRate = rateForPredictions;
+      else allDosesRate = RATE;
+
+      if (!currentRateForPredictions) {
+        setCurrentRateForPredictions(allDosesRate);
+        setRateForPredictions(allDosesRate);
+      }
+
+      let dateAllFirstDosesDone = null;
 
       Object.entries(debtData_).forEach((entry) => {
         const [key, value] = entry;
@@ -126,7 +165,12 @@ function App() {
 
         // If all first doses done --> prioritize second doses
         if (cumFirstDoses >= maxDoses && cumSecondDoses <= maxDoses) {
-          secondDosesDone = allDosesRate;
+          // We only start all doses possible after 3 weeks following the last 1st dose administered
+          if (moment(value.date).diff(dateAllFirstDosesDone, "days") >= 21) {
+            secondDosesDone = allDosesRate;
+          } else {
+            secondDosesDone = secondDosesDue;
+          }
         } else if (cumSecondDoses <= maxDoses) {
           // If more doses due that the rate
           // --> second doses done are equal to the rate
@@ -156,6 +200,9 @@ function App() {
         cumFirstDoses = cumFirstDoses + firstDosesDone;
         cumSecondDoses = cumSecondDoses + secondDosesDone;
 
+        if (cumFirstDoses >= maxDoses && !dateAllFirstDosesDone)
+          dateAllFirstDosesDone = moment(value.date);
+
         value.firstDosesDone = firstDosesDone;
         value.secondDosesDone = secondDosesDone;
         value.cumFirstDoses = cumFirstDoses;
@@ -171,7 +218,7 @@ function App() {
       setDebtData(debtDataToPlot);
       setWeeklyDebtData(convertToWeeklyData(debtDataToPlot));
     }
-  }, [parsedData]);
+  }, [parsedData, rateForPredictions]);
 
   return (
     <div className="App">
@@ -249,7 +296,13 @@ function App() {
           </Header.Subheader>
         </Header>
         <GenericContainer
-          ChildComponent={<VaccineStatisticsCompact parsedData={parsedData} />}
+          ChildComponent={
+            <VaccineStatisticsCompact
+              parsedData={parsedData}
+              showTweets={showTweets}
+              dateUpdated={updateDate}
+            />
+          }
           title="Rollout Dashboard"
           description="Key numbers related to the vaccination programme."
           dateUpdated={updateDate}
@@ -274,11 +327,54 @@ function App() {
             and are always subject to change when new data becomes available.
           </Header.Subheader>
         </Header>
+        {/* <Segment>
+          <Header as={"h4"}>
+            <Header.Content>
+              Set Combined Daily Rate for Predictions
+            </Header.Content>
+            <Header.Subheader>
+              Change the combined daily rate (1st + 2nd doses) used for
+              predictions. This allows one to assess how different rates impact
+              the vaccination timeline.
+            </Header.Subheader>
+          </Header>
+          <Form>
+            <Form.Group>
+              <Form.Field required>
+                <Input
+                  value={Math.round(rateForPredictions)}
+                  onClick={(value) => console.log(value)}
+                />
+              </Form.Field>
+              <Form.Button
+                onClick={() => setRateForPredictions(currentRateForPredictions)}
+              >
+                Current
+              </Form.Button>
+              <Form.Button
+                onClick={() =>
+                  setRateForPredictions(currentRateForPredictions / 2)
+                }
+              >
+                Half
+              </Form.Button>
+              <Form.Button
+                onClick={() =>
+                  setRateForPredictions(currentRateForPredictions * 2)
+                }
+              >
+                Double
+              </Form.Button>
+            </Form.Group>
+          </Form>
+        </Segment> */}
         <GenericContainer
           ChildComponent={
             <ScoreCardGroupWithDebt
               parsedData={parsedData}
               debtData={debtData}
+              showTweets={showTweets}
+              dateUpdated={updateDate}
             />
           }
           title="Government Target Scorecard"

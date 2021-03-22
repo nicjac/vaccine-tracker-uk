@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import {
   Statistic,
   Segment,
@@ -9,9 +9,11 @@ import {
   Card,
 } from "semantic-ui-react";
 import _ from "lodash";
+import moment from "moment";
+
 import VaccineStatisticsCompactCard from "./VaccineStatisticsCompactCard";
 
-const VaccineStatisticsCompact = ({ parsedData }) => {
+const VaccineStatisticsCompact = ({ parsedData, showTweets, dateUpdated }) => {
   const [loaded, setLoaded] = useState(null);
 
   const [allDosesStatistics, setAllDosesStatistics] = useState(null);
@@ -430,6 +432,149 @@ const VaccineStatisticsCompact = ({ parsedData }) => {
     return (
       <Grid>
         <Grid.Row>
+          {showTweets && (
+            <Fragment>
+              <Segment textAlign="left">
+                📈{moment(dateUpdated).format("DD MMMM")} Progress Tracker📈
+                <br />
+                <br />
+                1️⃣ 1st Dose
+                <br />
+                Adults{" "}
+                {"▓".repeat(
+                  Math.ceil(firstDosesStatistics.adultPopulationDone * 20)
+                )}
+                {"░".repeat(
+                  20 - Math.ceil(firstDosesStatistics.adultPopulationDone * 20)
+                )}{" "}
+                {(firstDosesStatistics.adultPopulationDone * 100).toFixed(0)}%
+                <br />
+                Priority{" "}
+                {"▓".repeat(
+                  Math.ceil(firstDosesStatistics.priorityGroupsDone * 20)
+                )}
+                {"░".repeat(
+                  20 - Math.ceil(firstDosesStatistics.priorityGroupsDone * 20)
+                )}{" "}
+                {(firstDosesStatistics.priorityGroupsDone * 100).toFixed(0)}%
+                <br />
+                <br />
+                2️⃣ 2nd Dose <br />
+                Adults{" "}
+                {"▓".repeat(
+                  Math.ceil(secondDosesStatistics.adultPopulationDone * 20)
+                )}
+                {"░".repeat(
+                  20 - Math.ceil(secondDosesStatistics.adultPopulationDone * 20)
+                )}{" "}
+                {(secondDosesStatistics.adultPopulationDone * 100).toFixed(0)}%
+                <br />
+                Priority{" "}
+                {"▓".repeat(
+                  Math.ceil(secondDosesStatistics.priorityGroupsDone * 20)
+                )}
+                {"░".repeat(
+                  20 - Math.ceil(secondDosesStatistics.priorityGroupsDone * 20)
+                )}{" "}
+                {(secondDosesStatistics.priorityGroupsDone * 100).toFixed(0)}%
+                <br />
+                <br />
+                #vaccine
+              </Segment>
+              <Segment textAlign="left">
+                1️⃣ First Doses Update on {moment(dateUpdated).format("DD MMMM")}{" "}
+                📢
+                <br />
+                <br />
+                {Intl.NumberFormat("en").format(firstDosesStatistics.new)} new
+                doses administered yesterday (
+                {moment(dateUpdated).subtract(1, "days").format("DD MMMM")})
+                across the UK🇬🇧
+                <br />
+                <br />
+                Total 1st Doses:{" "}
+                {Intl.NumberFormat("en").format(firstDosesStatistics.total)}
+                <br />
+                <br />
+                {firstDosesStatistics.newDayOnDayPercent > 0 ? "📈+" : "📉-"}
+                {Math.abs(
+                  Math.round(firstDosesStatistics.newDayOnDayPercent * 100)
+                )}
+                % day on day rate <br />
+                {firstDosesStatistics.newWeekOnWeekPercent > 0 ? "📈+" : "📉-"}
+                {Math.abs(
+                  Math.round(firstDosesStatistics.newWeekOnWeekPercent * 100)
+                )}
+                % week on week rate <br />
+                {firstDosesStatistics.sevenDaysRateWeekOnWeekPercent > 0
+                  ? "📈"
+                  : "📉"}
+                7-day average of{" "}
+                {Intl.NumberFormat("en").format(
+                  Math.round(firstDosesStatistics.sevenDaysRate)
+                )}{" "}
+                (
+                {firstDosesStatistics.sevenDaysRateWeekOnWeekPercent > 0
+                  ? "+"
+                  : "-"}
+                {Math.abs(
+                  Math.round(
+                    firstDosesStatistics.sevenDaysRateWeekOnWeekPercent * 100
+                  )
+                )}
+                % week on week)
+                <br />
+                <br />
+                #vaccine #COVID19
+              </Segment>
+              <Segment textAlign="left">
+                2️⃣ Second Doses Update on{" "}
+                {moment(dateUpdated).format("DD MMMM")} 📢
+                <br />
+                <br />
+                {Intl.NumberFormat("en").format(secondDosesStatistics.new)} new
+                doses administered yesterday (
+                {moment(dateUpdated).subtract(1, "days").format("DD MMMM")})
+                across the UK🇬🇧
+                <br />
+                <br />
+                Total 2nd Doses:{" "}
+                {Intl.NumberFormat("en").format(secondDosesStatistics.total)}
+                <br />
+                <br />
+                {secondDosesStatistics.newDayOnDayPercent > 0 ? "📈+" : "📉-"}
+                {Math.abs(
+                  Math.round(secondDosesStatistics.newDayOnDayPercent * 100)
+                )}
+                % day on day rate <br />
+                {secondDosesStatistics.newWeekOnWeekPercent > 0 ? "📈+" : "📉-"}
+                {Math.abs(
+                  Math.round(secondDosesStatistics.newWeekOnWeekPercent * 100)
+                )}
+                % week on week rate <br />
+                {secondDosesStatistics.sevenDaysRateWeekOnWeekPercent > 0
+                  ? "📈"
+                  : "📉"}
+                7-day average of{" "}
+                {Intl.NumberFormat("en").format(
+                  Math.round(secondDosesStatistics.sevenDaysRate)
+                )}{" "}
+                (
+                {secondDosesStatistics.sevenDaysRateWeekOnWeekPercent > 0
+                  ? "+"
+                  : "-"}
+                {Math.abs(
+                  Math.round(
+                    secondDosesStatistics.sevenDaysRateWeekOnWeekPercent * 100
+                  )
+                )}
+                % week on week)
+                <br />
+                <br />
+                #vaccine #COVID19
+              </Segment>
+            </Fragment>
+          )}
           <Segment basic textAlign="left">
             <Header as="h3" dividing textAlign="left">
               <Header.Content>💉 Overall Progress</Header.Content>
@@ -502,7 +647,7 @@ const VaccineStatisticsCompact = ({ parsedData }) => {
               <Card textAlign="left" compact>
                 <Card.Content>
                   <Card.Header>Priority Groups</Card.Header>
-                  <Card.Meta>53M individuals</Card.Meta>
+                  <Card.Meta>32M individuals</Card.Meta>
 
                   <Card.Description>
                     <Header as="h5" style={{ marginBottom: "2px" }}>
@@ -617,7 +762,9 @@ const VaccineStatisticsCompact = ({ parsedData }) => {
                 weekOnWeekPercent={allDosesStatistics.newWeekOnWeekPercent}
                 dataToPlot={parsedData.map((item) => {
                   return {
-                    data: item["newPeopleVaccinatedFirstDoseByPublishDate"],
+                    data:
+                      item["newPeopleVaccinatedFirstDoseByPublishDate"] +
+                      item["newPeopleVaccinatedSecondDoseByPublishDate"],
                     date: item["date"],
                   };
                 })}

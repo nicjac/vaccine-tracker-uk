@@ -39,15 +39,15 @@ const VaccinationProgressPlot = ({ parsedData }) => {
     const data = [parsedData[parsedData.length - 1]];
 
     return (
-      <ResponsiveContainer width={"100%"} height={150}>
+      <ResponsiveContainer width={"100%"} height={180}>
         <BarChart
           data={data}
           layout="vertical"
           margin={{
-            top: 5,
+            top: 30,
             right: 0,
             left: 0,
-            bottom: 20,
+            bottom: 30,
           }}
         >
           {/* <CartesianGrid strokeDasharray="3 3" /> */}

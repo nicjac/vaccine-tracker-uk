@@ -9,7 +9,7 @@ import {
 } from "semantic-ui-react";
 import _ from "lodash";
 
-const VaccineStatistics = ({ parsedData }) => {
+const VaccineStatistics = ({ parsedData, showTweets }) => {
   const [loaded, setLoaded] = useState(null);
 
   const [allDosesStatistics, setAllDosesStatistics] = useState(null);

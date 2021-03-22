@@ -11,13 +11,15 @@ const ScoreCardWithDebt = ({
   targetIndividuals,
   title,
   doseType,
+  predictionCallback,
+  visible,
 }) => {
   const [eventDay, setEventDay] = useState(null);
   const [dosesColumn, setDosesColumn] = useState(null);
 
   useEffect(() => {
     if (debtData) {
-      if (doseType == "first") {
+      if (doseType === "first") {
         setEventDay(
           debtData.find((datum) => datum.cumFirstDoses >= targetIndividuals)
         );
@@ -30,6 +32,16 @@ const ScoreCardWithDebt = ({
       }
     }
   }, [debtData]);
+
+  useEffect(() => {
+    if (eventDay)
+      predictionCallback({
+        eventDay: eventDay,
+        delta: Math.round(
+          moment(eventDay.date).diff(moment(targetDate), "days")
+        ),
+      });
+  }, [eventDay]);
 
   if (eventDay && parsedData) {
     let progressContent;
@@ -129,6 +141,8 @@ const ScoreCardWithDebt = ({
         </Fragment>
       );
     }
+
+    if (!visible) return null;
 
     return (
       <Grid.Column width={4} textAlign="center">
