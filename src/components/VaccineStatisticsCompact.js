@@ -732,7 +732,7 @@ const VaccineStatisticsCompact = ({ parsedData, showTweets, dateUpdated }) => {
             </Header>
             <Card.Group>
               <VaccineStatisticsCompactCard
-                title="Cummulative"
+                title="Cumulative"
                 description="Inoculations so far"
                 mainFigure={Intl.NumberFormat("en").format(
                   allDosesStatistics.total
@@ -800,7 +800,7 @@ const VaccineStatisticsCompact = ({ parsedData, showTweets, dateUpdated }) => {
             </Header>
             <Card.Group>
               <VaccineStatisticsCompactCard
-                title="Cummulative"
+                title="Cumulative"
                 description="1st Doses so far"
                 mainFigure={Intl.NumberFormat("en").format(
                   firstDosesStatistics.total
@@ -864,7 +864,7 @@ const VaccineStatisticsCompact = ({ parsedData, showTweets, dateUpdated }) => {
             </Header>
             <Card.Group>
               <VaccineStatisticsCompactCard
-                title="Cummulative"
+                title="Cumulative"
                 description="2nd Doses so far"
                 mainFigure={Intl.NumberFormat("en").format(
                   secondDosesStatistics.total
