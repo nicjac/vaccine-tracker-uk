@@ -771,7 +771,7 @@ const VaccineStatisticsCompact = ({ parsedData, showTweets, dateUpdated }) => {
               />
               <VaccineStatisticsCompactCard
                 title="7-Day Average"
-                description="7-Day Average for 1st Doses"
+                description="7-Day Average for inoculations"
                 mainFigure={Intl.NumberFormat("en").format(
                   Math.round(allDosesStatistics.sevenDaysRate)
                 )}
