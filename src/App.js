@@ -84,9 +84,10 @@ function App() {
         parsedData[parsedData.length - 1].sevenDaysRateSecond;
       const debtData_ = {};
 
-      const startDate = moment(parsedData[parsedData.length - 1].date)
-        .utc()
-        .add(1, "days");
+      const startDate = moment(parsedData[parsedData.length - 1].date).add(
+        1,
+        "days"
+      );
 
       // Create structure to hold the debt data
       for (let i = 0; i < 240; i++) {
@@ -115,6 +116,8 @@ function App() {
       );
       const SecondDosesToAddPerDay = SecondDosesToAdd / DaysDifference;
 
+      console.log(debtData_);
+
       for (let i = 0; i <= DaysDifference; i++) {
         let date = moment("2020-12-08").add(i, "days");
         let targetDate = date.add(12, "weeks").format("YYYY-MM-DD");
@@ -126,8 +129,11 @@ function App() {
       // Project initial data forward
       parsedData.map((datum) => {
         let targetDate = moment(datum["date"])
+          .add(1, "days")
           .add(12, "weeks")
           .format("YYYY-MM-DD");
+
+        console.log(targetDate);
 
         debtData_[targetDate].secondDosesDue +=
           datum.newPeopleVaccinatedFirstDoseByPublishDate;
