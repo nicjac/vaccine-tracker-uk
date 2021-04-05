@@ -84,10 +84,9 @@ function App() {
         parsedData[parsedData.length - 1].sevenDaysRateSecond;
       const debtData_ = {};
 
-      const startDate = moment(parsedData[parsedData.length - 1].date).add(
-        1,
-        "days"
-      );
+      const startDate = moment(parsedData[parsedData.length - 1].date)
+        .utc()
+        .add(1, "days");
 
       // Create structure to hold the debt data
       for (let i = 0; i < 240; i++) {
