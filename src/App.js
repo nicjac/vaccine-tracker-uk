@@ -77,155 +77,150 @@ function App() {
     setUpdateDate(moment(latestDate).add(1, "d").format("DD MMMM YYYY"));
   }, []);
 
-  // useEffect(() => {
-  //   if (parsedData) {
-  //     const RATE =
-  //       parsedData[parsedData.length - 1].sevenDaysRate +
-  //       parsedData[parsedData.length - 1].sevenDaysRateSecond;
-  //     const debtData_ = {};
+  useEffect(() => {
+    if (parsedData) {
+      const RATE =
+        parsedData[parsedData.length - 1].sevenDaysRate +
+        parsedData[parsedData.length - 1].sevenDaysRateSecond;
+      const debtData_ = {};
 
-  //     const startDate = moment(parsedData[parsedData.length - 1].date).add(
-  //       1,
-  //       "days"
-  //     );
+      const startDate = moment(parsedData[parsedData.length - 1].date).add(
+        1,
+        "days"
+      );
 
-  //     // Create structure to hold the debt data
-  //     for (let i = 0; i < 240; i++) {
-  //       debtData_[moment(startDate).add(i, "days").format("YYYY-MM-DD")] = {
-  //         date: moment(startDate).add(i, "days").format("YYYY-MM-DD"),
-  //         secondDosesDone: 0,
-  //         firstDosesDone: 0,
-  //         secondDosesCarryOverFromPreviousDay: 0,
-  //         secondDosesNewFromDay: 0,
-  //         spareCapacity: 0,
-  //         secondDosesDue: 0,
-  //         cumFirstDoses: 0,
-  //         cumSecondDoses: 0,
-  //         week: moment(moment(startDate).add(i, "days")).week(),
-  //       };
-  //     }
-  //     let keys = Object.keys(debtData_);
-  //     const endDate = keys[keys.length - 1];
+      // Create structure to hold the debt data
+      for (let i = 0; i < 240; i++) {
+        debtData_[startDate.clone().add(i, "days").format("YYYY-MM-DD")] = {
+          date: startDate.clone().add(i, "days").format("YYYY-MM-DD"),
+          secondDosesDone: 0,
+          firstDosesDone: 0,
+          secondDosesCarryOverFromPreviousDay: 0,
+          secondDosesNewFromDay: 0,
+          spareCapacity: 0,
+          secondDosesDue: 0,
+          cumFirstDoses: 0,
+          cumSecondDoses: 0,
+          week: moment(startDate.clone().add(i, "days")).week(),
+        };
+      }
+      let keys = Object.keys(debtData_);
+      const endDate = keys[keys.length - 1];
 
-  //     // Add 2nd doses data from before start of daily data releases
-  //     // Daily releases started on 2021-01-10
-  //     // Take the cumulative on
-  //     const SecondDosesToAdd = 2286572 - 391399;
-  //     const DaysDifference = Math.abs(
-  //       moment("2020-12-08").diff(moment("2021-01-09"), "days")
-  //     );
-  //     const SecondDosesToAddPerDay = SecondDosesToAdd / DaysDifference;
+      // Add 2nd doses data from before start of daily data releases
+      // Daily releases started on 2021-01-10
+      // Take the cumulative on
+      const SecondDosesToAdd = 2286572 - 391399;
+      const DaysDifference = Math.abs(
+        moment("2020-12-08").diff(moment("2021-01-09"), "days")
+      );
+      const SecondDosesToAddPerDay = SecondDosesToAdd / DaysDifference;
 
-  //     console.log(debtData_);
+      for (let i = 0; i <= DaysDifference; i++) {
+        let date = moment("2020-12-08").add(i, "days");
+        let targetDate = date.add(12, "weeks").format("YYYY-MM-DD");
 
-  //     for (let i = 0; i <= DaysDifference; i++) {
-  //       let date = moment("2020-12-08").add(i, "days");
-  //       let targetDate = date.add(12, "weeks").format("YYYY-MM-DD");
+        if (debtData_[targetDate])
+          debtData_[targetDate].secondDosesDue += SecondDosesToAddPerDay;
+      }
 
-  //       if (debtData_[targetDate])
-  //         debtData_[targetDate].secondDosesDue += SecondDosesToAddPerDay;
-  //     }
+      // Project initial data forward
+      parsedData.map((datum) => {
+        let targetDate = moment(datum["date"])
+          .add(12, "weeks")
+          .format("YYYY-MM-DD");
 
-  //     console.log(startDate);
+        // Only add if date falls in existing debt data
+        if (debtData_[targetDate])
+          debtData_[targetDate].secondDosesDue +=
+            datum.newPeopleVaccinatedFirstDoseByPublishDate;
+      });
 
-  //     // Project initial data forward
-  //     parsedData.map((datum) => {
-  //       let targetDate = moment(datum["date"])
-  //         // .add(1, "days") // Adding a day is necessary to reconciliate dates
-  //         .add(12, "weeks")
-  //         .format("YYYY-MM-DD");
+      let carryOver = 0;
+      let cumFirstDoses =
+        parsedData[parsedData.length - 1]
+          .cumPeopleVaccinatedFirstDoseByPublishDate;
+      let cumSecondDoses =
+        parsedData[parsedData.length - 1]
+          .cumPeopleVaccinatedSecondDoseByPublishDate;
 
-  //       console.log(targetDate);
+      const maxDoses = 53000000;
 
-  //       debtData_[targetDate].secondDosesDue +=
-  //         datum.newPeopleVaccinatedFirstDoseByPublishDate;
-  //     });
+      let allDosesRate;
+      if (rateForPredictions) allDosesRate = rateForPredictions;
+      else allDosesRate = RATE;
 
-  //     let carryOver = 0;
-  //     let cumFirstDoses =
-  //       parsedData[parsedData.length - 1]
-  //         .cumPeopleVaccinatedFirstDoseByPublishDate;
-  //     let cumSecondDoses =
-  //       parsedData[parsedData.length - 1]
-  //         .cumPeopleVaccinatedSecondDoseByPublishDate;
+      if (!currentRateForPredictions) {
+        setCurrentRateForPredictions(allDosesRate);
+        setRateForPredictions(allDosesRate);
+      }
 
-  //     const maxDoses = 53000000;
+      let dateAllFirstDosesDone = null;
 
-  //     let allDosesRate;
-  //     if (rateForPredictions) allDosesRate = rateForPredictions;
-  //     else allDosesRate = RATE;
+      Object.entries(debtData_).forEach((entry) => {
+        const [key, value] = entry;
 
-  //     if (!currentRateForPredictions) {
-  //       setCurrentRateForPredictions(allDosesRate);
-  //       setRateForPredictions(allDosesRate);
-  //     }
+        let secondDosesDue = value.secondDosesDue + carryOver;
 
-  //     let dateAllFirstDosesDone = null;
+        let secondDosesDone = 0;
+        let firstDosesDone = 0;
 
-  //     Object.entries(debtData_).forEach((entry) => {
-  //       const [key, value] = entry;
+        // If all first doses done --> prioritize second doses
+        if (cumFirstDoses >= maxDoses && cumSecondDoses <= maxDoses) {
+          // We only start all doses possible after 3 weeks following the last 1st dose administered
+          if (moment(value.date).diff(dateAllFirstDosesDone, "days") >= 21) {
+            secondDosesDone = allDosesRate;
+          } else {
+            secondDosesDone = secondDosesDue;
+          }
+        } else if (cumSecondDoses <= maxDoses) {
+          // If more doses due that the rate
+          // --> second doses done are equal to the rate
+          if (secondDosesDue > allDosesRate) {
+            secondDosesDone = allDosesRate;
+          } else {
+            secondDosesDone = secondDosesDue;
+          }
+        }
 
-  //       let secondDosesDue = value.secondDosesDue + carryOver;
+        carryOver = Math.max(secondDosesDue - secondDosesDone, 0);
 
-  //       let secondDosesDone = 0;
-  //       let firstDosesDone = 0;
+        let spareCapacity = Math.max(allDosesRate - secondDosesDone, 0);
 
-  //       // If all first doses done --> prioritize second doses
-  //       if (cumFirstDoses >= maxDoses && cumSecondDoses <= maxDoses) {
-  //         // We only start all doses possible after 3 weeks following the last 1st dose administered
-  //         if (moment(value.date).diff(dateAllFirstDosesDone, "days") >= 21) {
-  //           secondDosesDone = allDosesRate;
-  //         } else {
-  //           secondDosesDone = secondDosesDue;
-  //         }
-  //       } else if (cumSecondDoses <= maxDoses) {
-  //         // If more doses due that the rate
-  //         // --> second doses done are equal to the rate
-  //         if (secondDosesDue > allDosesRate) {
-  //           secondDosesDone = allDosesRate;
-  //         } else {
-  //           secondDosesDone = secondDosesDue;
-  //         }
-  //       }
+        if (spareCapacity > 0 && cumFirstDoses <= maxDoses) {
+          firstDosesDone = spareCapacity;
 
-  //       carryOver = Math.max(secondDosesDue - secondDosesDone, 0);
+          let targetDate = moment(value.date)
+            .add(12, "weeks")
+            .format("YYYY-MM-DD");
 
-  //       let spareCapacity = Math.max(allDosesRate - secondDosesDone, 0);
+          if (targetDate in debtData_)
+            debtData_[targetDate].secondDosesDue += firstDosesDone;
+          else console.log(targetDate);
+        }
 
-  //       if (spareCapacity > 0 && cumFirstDoses <= maxDoses) {
-  //         firstDosesDone = spareCapacity;
+        cumFirstDoses = cumFirstDoses + firstDosesDone;
+        cumSecondDoses = cumSecondDoses + secondDosesDone;
 
-  //         let targetDate = moment(value.date)
-  //           .add(12, "weeks")
-  //           .format("YYYY-MM-DD");
+        if (cumFirstDoses >= maxDoses && !dateAllFirstDosesDone)
+          dateAllFirstDosesDone = moment(value.date);
 
-  //         if (targetDate in debtData_)
-  //           debtData_[targetDate].secondDosesDue += firstDosesDone;
-  //         else console.log(targetDate);
-  //       }
+        value.firstDosesDone = firstDosesDone;
+        value.secondDosesDone = secondDosesDone;
+        value.cumFirstDoses = cumFirstDoses;
+        value.cumSecondDoses = cumSecondDoses;
+      });
 
-  //       cumFirstDoses = cumFirstDoses + firstDosesDone;
-  //       cumSecondDoses = cumSecondDoses + secondDosesDone;
+      const debtDataToPlot = [];
 
-  //       if (cumFirstDoses >= maxDoses && !dateAllFirstDosesDone)
-  //         dateAllFirstDosesDone = moment(value.date);
+      for (const [key, value] of Object.entries(debtData_)) {
+        debtDataToPlot.push(value);
+      }
 
-  //       value.firstDosesDone = firstDosesDone;
-  //       value.secondDosesDone = secondDosesDone;
-  //       value.cumFirstDoses = cumFirstDoses;
-  //       value.cumSecondDoses = cumSecondDoses;
-  //     });
-
-  //     const debtDataToPlot = [];
-
-  //     for (const [key, value] of Object.entries(debtData_)) {
-  //       debtDataToPlot.push(value);
-  //     }
-
-  //     setDebtData(debtDataToPlot);
-  //     setWeeklyDebtData(convertToWeeklyData(debtDataToPlot));
-  //   }
-  // }, [parsedData, rateForPredictions]);
+      setDebtData(debtDataToPlot);
+      setWeeklyDebtData(convertToWeeklyData(debtDataToPlot));
+    }
+  }, [parsedData, rateForPredictions]);
 
   return (
     <div className="App">
@@ -375,7 +370,7 @@ function App() {
             </Form.Group>
           </Form>
         </Segment> */}
-        {/* <GenericContainer
+        <GenericContainer
           ChildComponent={
             <ScoreCardGroupWithDebt
               parsedData={parsedData}
@@ -401,7 +396,7 @@ function App() {
           title="Projected Timeline"
           description="Projected timeline taking into account the second doses debt. A strict 12-week delay is introduced between 1st and 2nd doses until all 1st doses are administered, after which 2nd doses are done as soon as possible regardless of the delay. 2nd doses always take priority."
           dateUpdated={updateDate}
-        /> */}
+        />
 
         {/* <GenericContainer
           ChildComponent={<ScoreCardGroup parsedData={parsedData} />}
