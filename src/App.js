@@ -176,11 +176,18 @@ function App() {
         } else if (cumSecondDoses <= maxDoses) {
           // If more doses due that the rate
           // --> second doses done are equal to the rate
+
           if (secondDosesDue > allDosesRate) {
             secondDosesDone = allDosesRate;
           } else {
             secondDosesDone = secondDosesDue;
           }
+        }
+
+        // We set secondDosesDone to 0 if it would exceed the number of first doses done
+        // TODO: Improve this by settings secondDosesDone to the difference
+        if (cumSecondDoses + secondDosesDone >= cumFirstDoses) {
+          secondDosesDone = 0;
         }
 
         carryOver = Math.max(secondDosesDue - secondDosesDone, 0);
