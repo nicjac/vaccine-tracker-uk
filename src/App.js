@@ -186,8 +186,11 @@ function App() {
 
         // We set secondDosesDone to 0 if it would exceed the number of first doses done
         // TODO: Improve this by settings secondDosesDone to the difference
-        if (cumSecondDoses + secondDosesDone >= cumFirstDoses) {
-          secondDosesDone = 0;
+        if (cumSecondDoses + secondDosesDone > cumFirstDoses) {
+          secondDosesDone = Math.min(
+            cumSecondDoses + secondDosesDone - cumFirstDoses,
+            secondDosesDone
+          );
         }
 
         carryOver = Math.max(secondDosesDue - secondDosesDone, 0);
