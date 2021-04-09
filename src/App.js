@@ -164,8 +164,6 @@ function App() {
 
         value.carryOver = carryOver;
 
-        console.log(carryOver);
-        console.log(cumFirstDoses - cumSecondDoses);
         let secondDosesDone = 0;
         let firstDosesDone = 0;
 
@@ -195,7 +193,7 @@ function App() {
         }
 
         carryOver = Math.max(secondDosesDue - secondDosesDone, 0);
-
+        carryOver = Math.min(cumFirstDoses - cumSecondDoses, carryOver);
         let spareCapacity = Math.max(allDosesRate - secondDosesDone, 0);
 
         if (spareCapacity > 0 && cumFirstDoses <= maxDoses) {
@@ -224,6 +222,15 @@ function App() {
       });
 
       const debtDataToPlot = [];
+
+      let sum = 0;
+      Object.entries(debtData_).forEach((entry, index) => {
+        const [key, value] = entry;
+        sum += value.secondDosesDue;
+      });
+      console.log(sum);
+
+      console.log(debtData_);
 
       for (const [key, value] of Object.entries(debtData_)) {
         debtDataToPlot.push(value);
@@ -333,14 +340,14 @@ function App() {
           description="Daily vaccination rates for 1st and 2nd doses since 11 January 2021. Dashed contours indicate weekend days."
           dateUpdated={updateDate}
         />
-        {/* <Header as={"h2"}>
+        <Header as={"h2"}>
           <Header.Content>🔮 Projections and Predictions</Header.Content>
           <Header.Subheader>
             Projections and predictions using various models and statistical
             techniques. Those figures and visualisations are indicative only,
             and are always subject to change when new data becomes available.
           </Header.Subheader>
-        </Header> */}
+        </Header>
         {/* <Segment>
           <Header as={"h4"}>
             <Header.Content>
@@ -381,7 +388,7 @@ function App() {
               </Form.Button>
             </Form.Group>
           </Form>
-        </Segment>
+        </Segment> */}
         <GenericContainer
           ChildComponent={
             <ScoreCardGroupWithDebt
@@ -408,7 +415,7 @@ function App() {
           title="Projected Timeline"
           description="Projected timeline taking into account the second doses debt. A strict 12-week delay is introduced between 1st and 2nd doses until all 1st doses are administered, after which 2nd doses are done as soon as possible regardless of the delay. 2nd doses always take priority."
           dateUpdated={updateDate}
-        /> */}
+        />
 
         {/* <GenericContainer
           ChildComponent={<ScoreCardGroup parsedData={parsedData} />}
