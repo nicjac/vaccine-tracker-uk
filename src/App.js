@@ -90,7 +90,7 @@ function App() {
       );
 
       // Create structure to hold the debt data
-      for (let i = 0; i < 240; i++) {
+      for (let i = 0; i < 260; i++) {
         debtData_[startDate.clone().add(i, "days").format("YYYY-MM-DD")] = {
           date: startDate.clone().add(i, "days").format("YYYY-MM-DD"),
           secondDosesDone: 0,
@@ -157,11 +157,15 @@ function App() {
 
       let dateAllFirstDosesDone = null;
 
-      Object.entries(debtData_).forEach((entry) => {
+      Object.entries(debtData_).forEach((entry, index) => {
         const [key, value] = entry;
 
         let secondDosesDue = value.secondDosesDue + carryOver;
 
+        value.carryOver = carryOver;
+
+        console.log(carryOver);
+        console.log(cumFirstDoses - cumSecondDoses);
         let secondDosesDone = 0;
         let firstDosesDone = 0;
 
@@ -176,7 +180,6 @@ function App() {
         } else if (cumSecondDoses <= maxDoses) {
           // If more doses due that the rate
           // --> second doses done are equal to the rate
-
           if (secondDosesDue > allDosesRate) {
             secondDosesDone = allDosesRate;
           } else {
@@ -184,9 +187,7 @@ function App() {
           }
         }
 
-        // We set secondDosesDone to 0 if it would exceed the number of first doses done
-        // TODO: Improve this by settings secondDosesDone to the difference
-
+        // Never allow second doses to overtake first doses
         const maxSecondDoses = cumFirstDoses - cumSecondDoses;
 
         if (cumSecondDoses + secondDosesDone > cumFirstDoses) {
@@ -219,6 +220,7 @@ function App() {
         value.secondDosesDone = secondDosesDone;
         value.cumFirstDoses = cumFirstDoses;
         value.cumSecondDoses = cumSecondDoses;
+        // value.secondDosesDue = secondDosesDue;
       });
 
       const debtDataToPlot = [];
@@ -331,14 +333,14 @@ function App() {
           description="Daily vaccination rates for 1st and 2nd doses since 11 January 2021. Dashed contours indicate weekend days."
           dateUpdated={updateDate}
         />
-        <Header as={"h2"}>
+        {/* <Header as={"h2"}>
           <Header.Content>🔮 Projections and Predictions</Header.Content>
           <Header.Subheader>
             Projections and predictions using various models and statistical
             techniques. Those figures and visualisations are indicative only,
             and are always subject to change when new data becomes available.
           </Header.Subheader>
-        </Header>
+        </Header> */}
         {/* <Segment>
           <Header as={"h4"}>
             <Header.Content>
@@ -379,7 +381,7 @@ function App() {
               </Form.Button>
             </Form.Group>
           </Form>
-        </Segment> */}
+        </Segment>
         <GenericContainer
           ChildComponent={
             <ScoreCardGroupWithDebt
@@ -406,7 +408,7 @@ function App() {
           title="Projected Timeline"
           description="Projected timeline taking into account the second doses debt. A strict 12-week delay is introduced between 1st and 2nd doses until all 1st doses are administered, after which 2nd doses are done as soon as possible regardless of the delay. 2nd doses always take priority."
           dateUpdated={updateDate}
-        />
+        /> */}
 
         {/* <GenericContainer
           ChildComponent={<ScoreCardGroup parsedData={parsedData} />}
