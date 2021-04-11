@@ -152,6 +152,45 @@ function App() {
             datum.newPeopleVaccinatedFirstDoseByPublishDate;
       });
 
+      // We need to make sure that we are not double-counting second doses if they have been done before the 12 weeks delay
+      // We computed what was expected
+      const dateTwelveWeeksAgo = moment(parsedData[parsedData.length - 1].date)
+        .subtract(12, "weeks")
+        .format("YYYY-MM-DD");
+
+      const dataTwelveWeeksAgo = parsedData.filter(
+        (item) => item.date === dateTwelveWeeksAgo
+      );
+      const expectedSecondDoses =
+        dataTwelveWeeksAgo[0].cumPeopleVaccinatedFirstDoseByPublishDate;
+      const secondDosesDiscrepancies = Math.abs(
+        expectedSecondDoses -
+          parsedData[parsedData.length - 1]
+            .cumPeopleVaccinatedSecondDoseByPublishDate
+      );
+
+      let subtractedSecondDoses = 0;
+      let index = 0;
+      const fractionToSubtract = 0.04;
+      keys = Object.keys(debtData_);
+
+      // We subtract the discrepencies
+      while (subtractedSecondDoses <= secondDosesDiscrepancies) {
+        if (
+          debtData_[keys[index]].secondDosesDue >=
+          Math.round(fractionToSubtract * secondDosesDiscrepancies)
+        ) {
+          debtData_[keys[index]].secondDosesDue -= Math.round(
+            fractionToSubtract * secondDosesDiscrepancies
+          );
+          subtractedSecondDoses += Math.round(
+            fractionToSubtract * secondDosesDiscrepancies
+          );
+        }
+
+        index++;
+      }
+
       let carryOver = 0;
       let cumFirstDoses =
         parsedData[parsedData.length - 1]
@@ -210,6 +249,8 @@ function App() {
 
         carryOver = Math.max(secondDosesDue - secondDosesDone, 0);
         carryOver = Math.min(cumFirstDoses - cumSecondDoses, carryOver);
+        carryOver = Math.max(carryOver, 0);
+
         let spareCapacity = Math.max(allDosesRate - secondDosesDone, 0);
 
         if (spareCapacity > 0 && cumFirstDoses <= maxDoses) {
@@ -242,8 +283,16 @@ function App() {
         debtDataToPlot.push(value);
       }
 
+      console.log(
+        parsedData[parsedData.length - 1]
+          .cumPeopleVaccinatedSecondDoseByPublishDate +
+          _.sumBy(debtDataToPlot, "secondDosesDue")
+      );
+
       setDebtData(debtDataToPlot);
       setWeeklyDebtData(convertToWeeklyData(debtDataToPlot));
+
+      // console.log(parsedData);
     }
   }, [parsedData, rateForPredictions]);
 
@@ -364,39 +413,12 @@ function App() {
           <Dropdown
             options={options}
             selection
+            select
             defaultValue={currentRateForPredictions}
-            onChange={(a, b) => console.log(b)}
-          />
-
-          <Form>
-            <Form.Group>
-              <Form.Field required>
-                <Input
-                  value={Math.round(rateForPredictions)}
-                  onClick={(value) => console.log(value)}
-                />
-              </Form.Field>
-              <Form.Button
-                onClick={() => setRateForPredictions(currentRateForPredictions)}
-              >
-                Current
-              </Form.Button>
-              <Form.Button
-                onClick={() =>
-                  setRateForPredictions(currentRateForPredictions / 2)
-                }
-              >
-                Half
-              </Form.Button>
-              <Form.Button
-                onClick={() =>
-                  setRateForPredictions(currentRateForPredictions * 2)
-                }
-              >
-                Double
-              </Form.Button>
-            </Form.Group>
-          </Form>
+            value={currentRateForPredictions}
+            onChange={(a, b) => setRateForPredictions(b.value)}
+            labeled
+          ></Dropdown>
         </Segment> */}
         <GenericContainer
           ChildComponent={
