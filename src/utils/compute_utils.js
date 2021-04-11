@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _, { forEach } from "lodash";
 import moment from "moment";
 moment.locale("en-gb");
 
@@ -201,26 +201,32 @@ export const convertToWeeklyData = (data) => {
 
   const weeklyData = [];
 
-  const minWeek = data[0].week;
-  const maxWeek = data[data.length - 1].week;
+  const years = _.uniq(_.map(data, "year"));
 
-  for (let i = minWeek; i <= maxWeek; i++) {
-    const filteredData = data.filter((item) => item.week === i);
+  years.forEach((year) => {
+    const filteredByYear = data.filter((item) => item.year == year);
+    const weeks = _.uniq(_.map(filteredByYear, "week"));
 
-    let weekData = {};
+    weeks.forEach((week) => {
+      const filteredData = data.filter(
+        (item) => item.week === week && item.year == year
+      );
 
-    fieldsToAverage.forEach((field) => {
-      weekData[field] = _.meanBy(filteredData, field);
+      let weekData = {};
+
+      fieldsToAverage.forEach((field) => {
+        weekData[field] = _.meanBy(filteredData, field);
+      });
+
+      weekData["week"] = week;
+
+      weekData["weekFirstDay"] = moment({ y: year }) // get first day of the given year
+        .week(week) // get the first week according locale
+        .startOf("week") // get the first day of the week according locale
+        .format("YYYY-MM-DD");
+      weeklyData.push(weekData);
     });
-
-    weekData["week"] = i;
-
-    weekData["weekFirstDay"] = moment({ y: "2021" }) // get first day of the given year
-      .week(i) // get the first week according locale
-      .startOf("week") // get the first day of the week according locale
-      .format("YYYY-MM-DD");
-    weeklyData.push(weekData);
-  }
+  });
 
   return weeklyData;
 };

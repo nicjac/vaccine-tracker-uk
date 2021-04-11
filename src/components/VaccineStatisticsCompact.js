@@ -453,9 +453,13 @@ const VaccineStatisticsCompact = ({ parsedData, showTweets, dateUpdated }) => {
                 {"▓".repeat(
                   Math.ceil(firstDosesStatistics.priorityGroupsDone * 20)
                 )}
-                {"░".repeat(
-                  20 - Math.ceil(firstDosesStatistics.priorityGroupsDone * 20)
-                )}{" "}
+                {20 - Math.ceil(firstDosesStatistics.priorityGroupsDone * 20) >
+                0
+                  ? "░".repeat(
+                      20 -
+                        Math.ceil(firstDosesStatistics.priorityGroupsDone * 20)
+                    )
+                  : null}{" "}
                 {(firstDosesStatistics.priorityGroupsDone * 100).toFixed(0)}%
                 <br />
                 <br />

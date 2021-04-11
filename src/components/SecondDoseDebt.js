@@ -49,7 +49,26 @@ const SecondDoseDebt = ({
   weeklyDebtData,
   rateForPredictions,
 }) => {
-  if (debtData)
+  const [indexAllDone, setIndexAllDone] = useState(null);
+  const [indexAllDoneWeekly, setIndexAllDoneWeekly] = useState(null);
+
+  useEffect(() => {
+    if (debtData) {
+      const indexAllDone = debtData.findIndex(
+        (item) =>
+          item.cumFirstDoses >= 53000000 && item.cumSecondDoses >= 53000000
+      );
+      setIndexAllDone(indexAllDone);
+
+      const indexAllDoneWeekly = weeklyDebtData.findIndex(
+        (item) =>
+          item.cumFirstDoses >= 53000000 && item.cumSecondDoses >= 53000000
+      );
+      setIndexAllDoneWeekly(indexAllDoneWeekly);
+    }
+  }, [parsedData, debtData, weeklyDebtData, rateForPredictions]);
+
+  if (debtData && indexAllDone) {
     return (
       <Fragment>
         <Header as="h4">
@@ -64,7 +83,7 @@ const SecondDoseDebt = ({
         </Header>
         <ResponsiveContainer width="100%" height={375}>
           <BarChart
-            data={weeklyDebtData}
+            data={weeklyDebtData.slice(0, indexAllDoneWeekly + 1)}
             margin={{
               top: 10,
               right: 30,
@@ -72,7 +91,7 @@ const SecondDoseDebt = ({
               bottom: 30,
             }}
           >
-            <CartesianGrid strokeDasharray="3 3" />
+            {/* <CartesianGrid strokeDasharray="3 3" /> */}
             <Legend
               verticalAlign="top"
               height={36}
@@ -89,11 +108,13 @@ const SecondDoseDebt = ({
             <XAxis
               dataKey="weekFirstDay"
               tick={<CustomizedAxisTick />}
-              domain={[
-                parsedData[0].date,
-                parsedData[parsedData.length - 1].date,
-              ]}
-              label={{ dy: 30, value: "Week" }}
+              // domain={
+              //   (weeklyDebtData[0].date,
+              //   weeklyDebtData[weeklyDebtData.length - 1].date)
+              // }
+              // label={{ dy: 30, value: "Week" }}
+              type="category"
+              // domain={["auto", "auto"]}
             />
             <YAxis
               label={
@@ -121,7 +142,7 @@ const SecondDoseDebt = ({
         </Header>
         <ResponsiveContainer width="100%" height={375}>
           <LineChart
-            data={debtData}
+            data={debtData.slice(0, indexAllDone + 5)}
             margin={{
               top: 10,
               right: 30,
@@ -197,9 +218,73 @@ const SecondDoseDebt = ({
             />
           </LineChart>
         </ResponsiveContainer>
+        {/* <ResponsiveContainer width="100%" height={375}>
+          <LineChart
+            data={debtData}
+            margin={{
+              top: 10,
+              right: 30,
+              left: 25,
+              bottom: 25,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <Legend
+              verticalAlign="top"
+              height={36}
+              formatter={(value, entry, index) => {
+                switch (value) {
+                  case "cumFirstDoses":
+                    return "First Dose";
+
+                  case "cumSecondDoses":
+                    return "Second Dose";
+                }
+              }}
+            />
+            <XAxis
+              dataKey="date"
+              tick={<CustomizedAxisTick />}
+              domain={[
+                parsedData[0].date,
+                parsedData[parsedData.length - 1].date,
+              ]}
+              label={{ dy: 30, value: "Reporting Date" }}
+            />
+            <YAxis
+              type="number"
+              tickFormatter={(value) => `${Math.round(value / 1e6)}M`}
+              label={
+                <Text x={0} y={0} dx={30} dy={270} offset={0} angle={-90}>
+                  Individuals Vaccinated
+                </Text>
+              }
+            />
+            <Tooltip />
+
+            <Line
+              dataKey="secondDosesDue"
+              dot={false}
+              stroke="#82ca9d"
+              strokeWidth={3}
+            />
+            <Line
+              dataKey="carryOver"
+              dot={false}
+              stroke="#82ca9d"
+              strokeWidth={3}
+            />
+            <Line
+              dataKey="secondDosesDone"
+              dot={false}
+              stroke="#82ca9d"
+              strokeWidth={3}
+            />
+          </LineChart>
+        </ResponsiveContainer> */}
       </Fragment>
     );
-  else return null;
+  } else return null;
 };
 
 export default SecondDoseDebt;

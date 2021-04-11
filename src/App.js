@@ -11,6 +11,7 @@ import {
   Message,
   Form,
   Input,
+  Dropdown,
 } from "semantic-ui-react";
 import VaccinationProgressPlot from "./components/VaccinationProgressPlot";
 import DailyRatesPlot from "./components/DailyRatesPlot";
@@ -39,6 +40,20 @@ function App() {
   );
 
   let location = useLocation();
+
+  const options = [
+    { key: 1, text: "Current 7-day average", value: currentRateForPredictions },
+    {
+      key: 2,
+      text: "Twice Current 7-day average",
+      value: currentRateForPredictions * 2,
+    },
+    {
+      key: 3,
+      text: "Half-current 7-day average",
+      value: currentRateForPredictions / 2,
+    },
+  ];
 
   useEffect(() => {
     let showTweetsParam = new URLSearchParams(location.search).get(
@@ -90,7 +105,7 @@ function App() {
       );
 
       // Create structure to hold the debt data
-      for (let i = 0; i < 260; i++) {
+      for (let i = 0; i < 500; i++) {
         debtData_[startDate.clone().add(i, "days").format("YYYY-MM-DD")] = {
           date: startDate.clone().add(i, "days").format("YYYY-MM-DD"),
           secondDosesDone: 0,
@@ -102,6 +117,7 @@ function App() {
           cumFirstDoses: 0,
           cumSecondDoses: 0,
           week: moment(startDate.clone().add(i, "days")).week(),
+          year: moment(startDate.clone().add(i, "days")).format("YYYY"),
         };
       }
       let keys = Object.keys(debtData_);
@@ -218,19 +234,9 @@ function App() {
         value.secondDosesDone = secondDosesDone;
         value.cumFirstDoses = cumFirstDoses;
         value.cumSecondDoses = cumSecondDoses;
-        // value.secondDosesDue = secondDosesDue;
       });
 
       const debtDataToPlot = [];
-
-      let sum = 0;
-      Object.entries(debtData_).forEach((entry, index) => {
-        const [key, value] = entry;
-        sum += value.secondDosesDue;
-      });
-      console.log(sum);
-
-      console.log(debtData_);
 
       for (const [key, value] of Object.entries(debtData_)) {
         debtDataToPlot.push(value);
@@ -350,15 +356,18 @@ function App() {
         </Header>
         {/* <Segment>
           <Header as={"h4"}>
-            <Header.Content>
-              Set Combined Daily Rate for Predictions
-            </Header.Content>
+            <Header.Content>Prediction Parameters</Header.Content>
             <Header.Subheader>
-              Change the combined daily rate (1st + 2nd doses) used for
-              predictions. This allows one to assess how different rates impact
-              the vaccination timeline.
+              Update the parameters used for the predictions below.
             </Header.Subheader>
           </Header>
+          <Dropdown
+            options={options}
+            selection
+            defaultValue={currentRateForPredictions}
+            onChange={(a, b) => console.log(b)}
+          />
+
           <Form>
             <Form.Group>
               <Form.Field required>

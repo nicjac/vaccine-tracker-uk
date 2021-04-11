@@ -87,7 +87,7 @@ const ScoreCardGroupWithDebt = ({
           title="All Priority Groups"
           doseType="first"
           predictionCallback={setPredictionPriorityFirst}
-          visible={true}
+          visible={false}
         />
         <ScoreCardWithDebt
           debtData={debtData}
