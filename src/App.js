@@ -418,6 +418,7 @@ function App() {
               Update the parameters used for the predictions below.
             </Header.Subheader>
           </Header>
+          Combined rate:{" "}
           <Dropdown
             options={options}
             selection
@@ -429,8 +430,7 @@ function App() {
               setRateForPredictions(b.value);
             }}
             loading={loading}
-            // labeled
-          ></Dropdown>
+          />
         </Segment>
         <GenericContainer
           ChildComponent={
