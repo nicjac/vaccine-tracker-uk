@@ -72,7 +72,7 @@ const SecondDoseDebt = ({
     return (
       <Fragment>
         <Header as="h4">
-          Weekly Doses Prediction
+          Cumulative Doses Predictions
           <Header.Subheader>
             Predictions for rate of{" "}
             <b>
@@ -161,6 +161,16 @@ const SecondDoseDebt = ({
             />
           </LineChart>
         </ResponsiveContainer>
+        <Header as="h4">
+          Weekly Doses Prediction
+          <Header.Subheader>
+            Predictions for rate of{" "}
+            <b>
+              {Intl.NumberFormat("en").format(Math.round(rateForPredictions))}
+            </b>{" "}
+            combined doses a day
+          </Header.Subheader>
+        </Header>
         <ResponsiveContainer width="100%" height={375}>
           <BarChart
             data={weeklyDebtData.slice(0, indexAllDoneWeekly + 1)}
@@ -210,16 +220,6 @@ const SecondDoseDebt = ({
             <Bar dataKey="secondDosesDone" stackId="a" fill="#82ca9d" />
           </BarChart>
         </ResponsiveContainer>
-        <Header as="h4">
-          Cumulative Doses Predictions
-          <Header.Subheader>
-            Predictions for rate of{" "}
-            <b>
-              {Intl.NumberFormat("en").format(Math.round(rateForPredictions))}
-            </b>{" "}
-            combined doses a day
-          </Header.Subheader>
-        </Header>
 
         {/* <ResponsiveContainer width="100%" height={375}>
           <LineChart
