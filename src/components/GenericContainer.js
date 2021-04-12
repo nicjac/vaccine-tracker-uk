@@ -1,14 +1,15 @@
 import React from "react";
-import { Card, Icon } from "semantic-ui-react";
+import { Card, Icon, Segment } from "semantic-ui-react";
 
 const GenericContainer = ({
   ChildComponent,
   title,
   description,
   dateUpdated,
+  loading,
 }) => {
   return (
-    <Card fluid>
+    <Card fluid as={Segment} loading={loading}>
       <Card.Content>
         <Card.Header>{title}</Card.Header>
         <Card.Meta>{description}</Card.Meta>

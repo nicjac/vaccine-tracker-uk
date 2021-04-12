@@ -38,6 +38,7 @@ function App() {
   const [currentRateForPredictions, setCurrentRateForPredictions] = useState(
     null
   );
+  const [loading, setLoading] = useState(true);
 
   let location = useLocation();
 
@@ -94,6 +95,7 @@ function App() {
 
   useEffect(() => {
     if (parsedData) {
+      setLoading(true);
       const RATE =
         parsedData[parsedData.length - 1].sevenDaysRate +
         parsedData[parsedData.length - 1].sevenDaysRateSecond;
@@ -293,9 +295,12 @@ function App() {
       setWeeklyDebtData(convertToWeeklyData(debtDataToPlot));
 
       // console.log(parsedData);
+
+      setLoading(false);
     }
   }, [parsedData, rateForPredictions]);
 
+  console.log(loading);
   return (
     <div className="App">
       <Container>
@@ -382,18 +387,21 @@ function App() {
           title="Rollout Dashboard"
           description="Key numbers related to the vaccination programme."
           dateUpdated={updateDate}
+          loading={loading}
         />
         <GenericContainer
           ChildComponent={<VaccinationProgressPlot parsedData={parsedData} />}
           title="Rollout Tracker"
           description="Breakdown of the overall COVID vaccine rollout in the UK for 1st and 2nd doses."
           dateUpdated={updateDate}
+          loading={loading}
         />
         <GenericContainer
           ChildComponent={<DailyRatesPlot parsedData={parsedData} />}
           title="Daily Vaccination Rates"
           description="Daily vaccination rates for 1st and 2nd doses since 11 January 2021. Dashed contours indicate weekend days."
           dateUpdated={updateDate}
+          loading={loading}
         />
         <Header as={"h2"}>
           <Header.Content>🔮 Projections and Predictions</Header.Content>
@@ -403,7 +411,7 @@ function App() {
             and are always subject to change when new data becomes available.
           </Header.Subheader>
         </Header>
-        {/* <Segment>
+        <Segment>
           <Header as={"h4"}>
             <Header.Content>Prediction Parameters</Header.Content>
             <Header.Subheader>
@@ -415,11 +423,15 @@ function App() {
             selection
             select
             defaultValue={currentRateForPredictions}
-            value={currentRateForPredictions}
-            onChange={(a, b) => setRateForPredictions(b.value)}
-            labeled
+            value={rateForPredictions}
+            onChange={(a, b) => {
+              setLoading(true);
+              setRateForPredictions(b.value);
+            }}
+            loading={loading}
+            // labeled
           ></Dropdown>
-        </Segment> */}
+        </Segment>
         <GenericContainer
           ChildComponent={
             <ScoreCardGroupWithDebt
@@ -433,6 +445,7 @@ function App() {
           description="Keeping track of the government targets. The dates and number of individuals are based on the UK COVID-19 Delivery Plan and the explainer by the Institute For Government. These predictions take into account the impact of the second doses debt. It is assumed that the rate is constant (equal to the last 7-day average for 1st and 2nd doses).
           A strict 12-week delay is introduced between 1st and 2nd doses. 2nd doses always take priority."
           dateUpdated={updateDate}
+          loading={loading}
         />
         <GenericContainer
           ChildComponent={
@@ -446,6 +459,7 @@ function App() {
           title="Projected Timeline"
           description="Projected timeline taking into account the second doses debt. A strict 12-week delay is introduced between 1st and 2nd doses until all 1st doses are administered, after which 2nd doses are done as soon as possible regardless of the delay. 2nd doses always take priority."
           dateUpdated={updateDate}
+          loading={loading}
         />
 
         {/* <GenericContainer

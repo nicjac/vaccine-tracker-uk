@@ -31,13 +31,13 @@ const CustomizedAxisTick = ({ x, y, stroke, payload }) => {
       y={y}
       // x={0}
       // y={0}
-      dx={-18}
+      dx={-30}
       dy={16}
       // textAnchor="end"
       fill={"#666"}
       // transform="rotate(-35)"
     >
-      {moment(payload.value).format("DD MMM")}
+      {moment(payload.value).format("DD MMM YY")}
     </text>
     // </g>
   );
@@ -81,6 +81,86 @@ const SecondDoseDebt = ({
             combined doses a day
           </Header.Subheader>
         </Header>
+        <ResponsiveContainer width="100%" height={375}>
+          <LineChart
+            // data={debtData.slice(0, indexAllDone + 5)}
+            data={debtData.slice(0, indexAllDone + 5)}
+            margin={{
+              top: 10,
+              right: 30,
+              left: 25,
+              bottom: 25,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <Legend
+              verticalAlign="top"
+              height={36}
+              formatter={(value, entry, index) => {
+                switch (value) {
+                  case "cumFirstDoses":
+                    return "First Dose";
+
+                  case "cumSecondDoses":
+                    return "Second Dose";
+                }
+              }}
+            />
+            <XAxis
+              dataKey="date"
+              tick={<CustomizedAxisTick />}
+              domain={[
+                parsedData[0].date,
+                parsedData[parsedData.length - 1].date,
+              ]}
+              label={{ dy: 30, value: "Reporting Date" }}
+            />
+            <YAxis
+              type="number"
+              domain={[0, 60000000]}
+              tickFormatter={(value) => `${Math.round(value / 1e6)}M`}
+              label={
+                <Text x={0} y={0} dx={30} dy={270} offset={0} angle={-90}>
+                  Individuals Vaccinated
+                </Text>
+              }
+            />
+            <Tooltip />
+
+            <ReferenceLine
+              stroke="blue"
+              y="53000000"
+              strokeDasharray="3 3"
+              label={{
+                position: "insideBottomLeft",
+                value: "All Adults",
+                fontSize: 16,
+              }}
+            />
+            <ReferenceLine
+              stroke="red"
+              y="32000000"
+              strokeDasharray="3 3"
+              label={{
+                position: "insideBottomRight",
+                value: "Priority Groups ",
+                fontSize: 16,
+              }}
+            />
+            <Line
+              dataKey="cumFirstDoses"
+              dot={false}
+              stroke="#8884d8"
+              strokeWidth={3}
+            />
+            <Line
+              dataKey="cumSecondDoses"
+              dot={false}
+              stroke="#82ca9d"
+              strokeWidth={3}
+            />
+          </LineChart>
+        </ResponsiveContainer>
         <ResponsiveContainer width="100%" height={375}>
           <BarChart
             data={weeklyDebtData.slice(0, indexAllDoneWeekly + 1)}
@@ -140,87 +220,10 @@ const SecondDoseDebt = ({
             combined doses a day
           </Header.Subheader>
         </Header>
-        <ResponsiveContainer width="100%" height={375}>
-          <LineChart
-            data={debtData.slice(0, indexAllDone + 5)}
-            margin={{
-              top: 10,
-              right: 30,
-              left: 25,
-              bottom: 25,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <Legend
-              verticalAlign="top"
-              height={36}
-              formatter={(value, entry, index) => {
-                switch (value) {
-                  case "cumFirstDoses":
-                    return "First Dose";
 
-                  case "cumSecondDoses":
-                    return "Second Dose";
-                }
-              }}
-            />
-            <XAxis
-              dataKey="date"
-              tick={<CustomizedAxisTick />}
-              domain={[
-                parsedData[0].date,
-                parsedData[parsedData.length - 1].date,
-              ]}
-              label={{ dy: 30, value: "Reporting Date" }}
-            />
-            <YAxis
-              type="number"
-              domain={[0, 60000000]}
-              tickFormatter={(value) => `${Math.round(value / 1e6)}M`}
-              label={
-                <Text x={0} y={0} dx={30} dy={270} offset={0} angle={-90}>
-                  Individuals Vaccinated
-                </Text>
-              }
-            />
-            <Tooltip />
-            <ReferenceLine
-              stroke="red"
-              y="32000000"
-              strokeDasharray="3 3"
-              label={{
-                position: "insideBottomLeft",
-                value: "Priority Groups ",
-                fontSize: 16,
-              }}
-            />
-            <ReferenceLine
-              stroke="blue"
-              y="53000000"
-              strokeDasharray="3 3"
-              label={{
-                position: "insideBottomLeft",
-                value: "All Adults",
-                fontSize: 16,
-              }}
-            />
-            <Line
-              dataKey="cumFirstDoses"
-              dot={false}
-              stroke="#8884d8"
-              strokeWidth={3}
-            />
-            <Line
-              dataKey="cumSecondDoses"
-              dot={false}
-              stroke="#82ca9d"
-              strokeWidth={3}
-            />
-          </LineChart>
-        </ResponsiveContainer>
         {/* <ResponsiveContainer width="100%" height={375}>
           <LineChart
-            data={debtData}
+            data={debtData.slice(0, parsedData.length)}
             margin={{
               top: 10,
               right: 30,
@@ -268,18 +271,60 @@ const SecondDoseDebt = ({
               stroke="#82ca9d"
               strokeWidth={3}
             />
+
+          </LineChart>
+        </ResponsiveContainer>
+        <ResponsiveContainer width="100%" height={375}>
+          <LineChart
+            data={parsedData.slice(7, parsedData.length)}
+            margin={{
+              top: 10,
+              right: 30,
+              left: 25,
+              bottom: 25,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <Legend
+              verticalAlign="top"
+              height={36}
+              formatter={(value, entry, index) => {
+                switch (value) {
+                  case "cumFirstDoses":
+                    return "First Dose";
+
+                  case "cumSecondDoses":
+                    return "Second Dose";
+                }
+              }}
+            />
+            <XAxis
+              dataKey="date"
+              tick={<CustomizedAxisTick />}
+              domain={[
+                parsedData[0].date,
+                parsedData[parsedData.length - 1].date,
+              ]}
+              label={{ dy: 30, value: "Reporting Date" }}
+            />
+            <YAxis
+              type="number"
+              tickFormatter={(value) => `${Math.round(value / 1e6)}M`}
+              label={
+                <Text x={0} y={0} dx={30} dy={270} offset={0} angle={-90}>
+                  Individuals Vaccinated
+                </Text>
+              }
+            />
+            <Tooltip />
+
             <Line
-              dataKey="carryOver"
+              dataKey="newPeopleVaccinatedFirstDoseByPublishDate"
               dot={false}
               stroke="#82ca9d"
               strokeWidth={3}
             />
-            <Line
-              dataKey="secondDosesDone"
-              dot={false}
-              stroke="#82ca9d"
-              strokeWidth={3}
-            />
+ 
           </LineChart>
         </ResponsiveContainer> */}
       </Fragment>
