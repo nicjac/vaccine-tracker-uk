@@ -1,6 +1,6 @@
 import "./App.css";
 import "semantic-ui-css/semantic.min.css";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import {
   Container,
   Header,
@@ -17,16 +17,27 @@ import VaccinationProgressPlot from "./components/VaccinationProgressPlot";
 import DailyRatesPlot from "./components/DailyRatesPlot";
 import GenericContainer from "./components/GenericContainer";
 import ScoreCardGroupWithDebt from "./components/ScoreCardGroupWithDebt";
-import VaccineStatisticsCompact from "./components/VaccineStatisticsCompact";
+import VaccineStatisticsCompact from "./components/Statistics/VaccineStatisticsCompact";
+import StatisticsOverall from "./components/Statistics/StatisticsOverall";
+import StatisticsFirstDoses from "./components/Statistics/StatisticsFirstDoses";
+import StatisticsSecondDoses from "./components/Statistics/StatisticsSecondDoses";
+
+import StatisticsCombinedDoses from "./components/Statistics/StatisticsCombinedDoses";
+
 import SecondDoseDebt from "./components/SecondDoseDebt";
 
 import logo from "./assets/logo.png";
 import vaccination_json from "./data/vaccination-data.json";
 import moment from "moment";
-import { computeAverageRate, convertToWeeklyData } from "./utils/compute_utils";
+import {
+  computeAverageRate,
+  convertToWeeklyData,
+  computeStatistics,
+} from "./utils/compute_utils";
 import PredictedTimeline from "./components/PredictedTimeline";
 import { useLocation } from "react-router-dom";
 import _ from "lodash";
+import { generateTweetHistoricalData } from "./utils/generate_tweets";
 
 function App() {
   const [showTweets, setShowTweets] = useState(false);
@@ -39,6 +50,7 @@ function App() {
     null
   );
   const [loading, setLoading] = useState(true);
+  const [statistics, setStatistics] = useState(null);
 
   let location = useLocation();
 
@@ -118,6 +130,7 @@ function App() {
           secondDosesDue: 0,
           cumFirstDoses: 0,
           cumSecondDoses: 0,
+          predicted: true,
           week: moment(startDate.clone().add(i, "days")).week(),
           year: moment(startDate.clone().add(i, "days")).format("YYYY"),
         };
@@ -279,22 +292,35 @@ function App() {
         value.cumSecondDoses = cumSecondDoses;
       });
 
-      const debtDataToPlot = [];
+      // const debtDataToPlot = [];
+
+      const debtDataToPlot = parsedData.map((datum) => {
+        return {
+          date: datum.date,
+          week: moment(datum.date).week(),
+          cumFirstDoses: datum.cumPeopleVaccinatedFirstDoseByPublishDate,
+          cumSecondDoses: datum.cumPeopleVaccinatedSecondDoseByPublishDate,
+          firstDosesDone: datum.newPeopleVaccinatedFirstDoseByPublishDate,
+          secondDosesDone: datum.newPeopleVaccinatedSecondDoseByPublishDate,
+          predicted: false,
+        };
+      });
 
       for (const [key, value] of Object.entries(debtData_)) {
         debtDataToPlot.push(value);
       }
 
-      console.log(
-        parsedData[parsedData.length - 1]
-          .cumPeopleVaccinatedSecondDoseByPublishDate +
-          _.sumBy(debtDataToPlot, "secondDosesDue")
-      );
+      // console.log(
+      //   parsedData[parsedData.length - 1]
+      //     .cumPeopleVaccinatedSecondDoseByPublishDate +
+      //     _.sumBy(debtDataToPlot, "secondDosesDue")
+      // );
 
       setDebtData(debtDataToPlot);
       setWeeklyDebtData(convertToWeeklyData(debtDataToPlot));
 
-      // console.log(parsedData);
+      // Compute statistics for 1st and 2nd doses
+      setStatistics(computeStatistics(parsedData));
 
       setLoading(false);
     }
@@ -376,16 +402,64 @@ function App() {
             historical data. No predictions or projections involved.
           </Header.Subheader>
         </Header>
+
+        {showTweets &&
+          statistics &&
+          generateTweetHistoricalData(parsedData, statistics, updateDate)}
+
         <GenericContainer
           ChildComponent={
-            <VaccineStatisticsCompact
+            <StatisticsOverall
               parsedData={parsedData}
               showTweets={showTweets}
               dateUpdated={updateDate}
+              statistics={statistics}
             />
           }
-          title="Rollout Dashboard"
-          description="Key numbers related to the vaccination programme."
+          title="Overall Progress 💉 "
+          description="Key figures for overall progress of vaccine roll-out"
+          dateUpdated={updateDate}
+          loading={loading}
+        />
+        <GenericContainer
+          ChildComponent={
+            <StatisticsCombinedDoses
+              parsedData={parsedData}
+              showTweets={showTweets}
+              dateUpdated={updateDate}
+              statistics={statistics}
+            />
+          }
+          title="1️⃣ + 2️⃣ All Doses"
+          description="Combined figures for 1st and 2nd doses"
+          dateUpdated={updateDate}
+          loading={loading}
+        />
+        <GenericContainer
+          ChildComponent={
+            <StatisticsFirstDoses
+              parsedData={parsedData}
+              showTweets={showTweets}
+              dateUpdated={updateDate}
+              statistics={statistics}
+            />
+          }
+          title="1️⃣ First Doses"
+          description="Figures for 1st doses"
+          dateUpdated={updateDate}
+          loading={loading}
+        />
+        <GenericContainer
+          ChildComponent={
+            <StatisticsSecondDoses
+              parsedData={parsedData}
+              showTweets={showTweets}
+              dateUpdated={updateDate}
+              statistics={statistics}
+            />
+          }
+          title="2️⃣ Second Doses"
+          description="Figures for 2nd doses"
           dateUpdated={updateDate}
           loading={loading}
         />

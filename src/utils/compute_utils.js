@@ -218,15 +218,342 @@ export const convertToWeeklyData = (data) => {
         weekData[field] = _.meanBy(filteredData, field);
       });
 
+      const predicted = _.some(filteredData, { predicted: true });
+
       weekData["week"] = week;
+
+      weekData.predicted = predicted;
 
       weekData["weekFirstDay"] = moment({ y: year }) // get first day of the given year
         .week(week) // get the first week according locale
         .startOf("week") // get the first day of the week according locale
         .format("YYYY-MM-DD");
+
       weeklyData.push(weekData);
     });
   });
 
   return weeklyData;
+};
+
+export const computeStatistics = (parsedData) => {
+  const latestIndex = parsedData.length - 1;
+
+  let statistics = {};
+
+  statistics.allDosesStatistics = {
+    total:
+      parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"] +
+      parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"],
+    totalDayOnDay:
+      parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"] +
+      parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"] -
+      (parsedData[latestIndex - 1][
+        "cumPeopleVaccinatedFirstDoseByPublishDate"
+      ] +
+        parsedData[latestIndex - 1][
+          "cumPeopleVaccinatedSecondDoseByPublishDate"
+        ]),
+    totalDayOnDayPercent:
+      (parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"] +
+        parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"]) /
+        (parsedData[latestIndex - 1][
+          "cumPeopleVaccinatedFirstDoseByPublishDate"
+        ] +
+          parsedData[latestIndex - 1][
+            "cumPeopleVaccinatedSecondDoseByPublishDate"
+          ]) -
+      1,
+    totalWeekOnWeek:
+      parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"] +
+      parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"] -
+      (parsedData[latestIndex - 7][
+        "cumPeopleVaccinatedFirstDoseByPublishDate"
+      ] +
+        parsedData[latestIndex - 7][
+          "cumPeopleVaccinatedSecondDoseByPublishDate"
+        ]),
+    totalWeekOnWeekPercent:
+      (parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"] +
+        parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"]) /
+        (parsedData[latestIndex - 7][
+          "cumPeopleVaccinatedFirstDoseByPublishDate"
+        ] +
+          parsedData[latestIndex - 7][
+            "cumPeopleVaccinatedSecondDoseByPublishDate"
+          ]) -
+      1,
+    new:
+      parsedData[latestIndex]["newPeopleVaccinatedFirstDoseByPublishDate"] +
+      parsedData[latestIndex]["newPeopleVaccinatedSecondDoseByPublishDate"],
+    newDayOnDayPercent:
+      (parsedData[latestIndex]["newPeopleVaccinatedFirstDoseByPublishDate"] +
+        parsedData[latestIndex]["newPeopleVaccinatedSecondDoseByPublishDate"]) /
+        (parsedData[latestIndex - 1][
+          "newPeopleVaccinatedFirstDoseByPublishDate"
+        ] +
+          parsedData[latestIndex - 1][
+            "newPeopleVaccinatedSecondDoseByPublishDate"
+          ]) -
+      1,
+    newDayOnDay:
+      parsedData[latestIndex]["newPeopleVaccinatedFirstDoseByPublishDate"] +
+      parsedData[latestIndex]["newPeopleVaccinatedSecondDoseByPublishDate"] -
+      (parsedData[latestIndex - 1][
+        "newPeopleVaccinatedFirstDoseByPublishDate"
+      ] +
+        parsedData[latestIndex - 1][
+          "newPeopleVaccinatedSecondDoseByPublishDate"
+        ]),
+    newWeekOnWeek:
+      parsedData[latestIndex]["newPeopleVaccinatedFirstDoseByPublishDate"] +
+      parsedData[latestIndex]["newPeopleVaccinatedSecondDoseByPublishDate"] -
+      (parsedData[latestIndex - 7][
+        "newPeopleVaccinatedFirstDoseByPublishDate"
+      ] +
+        parsedData[latestIndex - 7][
+          "newPeopleVaccinatedSecondDoseByPublishDate"
+        ]),
+    newWeekOnWeekPercent:
+      (parsedData[latestIndex]["newPeopleVaccinatedFirstDoseByPublishDate"] +
+        parsedData[latestIndex]["newPeopleVaccinatedSecondDoseByPublishDate"]) /
+        (parsedData[latestIndex - 7][
+          "newPeopleVaccinatedFirstDoseByPublishDate"
+        ] +
+          parsedData[latestIndex - 7][
+            "newPeopleVaccinatedSecondDoseByPublishDate"
+          ]) -
+      1,
+    completedCourses:
+      parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"] /
+      parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"],
+    completedCoursesWeekOnWeek:
+      parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"] /
+        parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"] -
+      parsedData[latestIndex - 7][
+        "cumPeopleVaccinatedSecondDoseByPublishDate"
+      ] /
+        parsedData[latestIndex - 7][
+          "cumPeopleVaccinatedFirstDoseByPublishDate"
+        ],
+    completedCoursesDayOnDay:
+      parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"] /
+        parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"] -
+      parsedData[latestIndex - 1][
+        "cumPeopleVaccinatedSecondDoseByPublishDate"
+      ] /
+        parsedData[latestIndex - 1][
+          "cumPeopleVaccinatedFirstDoseByPublishDate"
+        ],
+    sevenDaysRate:
+      parsedData[latestIndex]["sevenDaysRate"] +
+      parsedData[latestIndex]["sevenDaysRateSecond"],
+    sevenDaysRateDayOnDay:
+      parsedData[latestIndex]["sevenDaysRate"] +
+      parsedData[latestIndex]["sevenDaysRateSecond"] -
+      parsedData[latestIndex - 1]["sevenDaysRate"] +
+      parsedData[latestIndex - 1]["sevenDaysRateSecond"],
+
+    sevenDaysRateDayOnDayPercent:
+      (parsedData[latestIndex]["sevenDaysRate"] +
+        parsedData[latestIndex]["sevenDaysRateSecond"]) /
+        (parsedData[latestIndex - 1]["sevenDaysRate"] +
+          parsedData[latestIndex - 1]["sevenDaysRateSecond"]) -
+      1,
+    sevenDaysRateWeekOnWeek:
+      parsedData[latestIndex]["sevenDaysRate"] +
+      parsedData[latestIndex]["sevenDaysRateSecond"] -
+      parsedData[latestIndex - 7]["sevenDaysRate"] +
+      parsedData[latestIndex - 7]["sevenDaysRateSecond"],
+
+    sevenDaysRateWeekOnWeekPercent:
+      (parsedData[latestIndex]["sevenDaysRate"] +
+        parsedData[latestIndex]["sevenDaysRateSecond"]) /
+        (parsedData[latestIndex - 7]["sevenDaysRate"] +
+          parsedData[latestIndex - 7]["sevenDaysRateSecond"]) -
+      1,
+  };
+
+  statistics.firstDosesStatistics = {
+    total: parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"],
+    totalDayOnDay:
+      parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"] -
+      parsedData[latestIndex - 1]["cumPeopleVaccinatedFirstDoseByPublishDate"],
+
+    totalDayOnDayPercent:
+      parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"] /
+        parsedData[latestIndex - 1][
+          "cumPeopleVaccinatedFirstDoseByPublishDate"
+        ] -
+      1,
+    totalWeekOnWeek:
+      parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"] -
+      parsedData[latestIndex - 7]["cumPeopleVaccinatedFirstDoseByPublishDate"],
+
+    totalWeekOnWeekPercent:
+      parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"] /
+        parsedData[latestIndex - 7][
+          "cumPeopleVaccinatedFirstDoseByPublishDate"
+        ] -
+      1,
+    new: parsedData[latestIndex]["newPeopleVaccinatedFirstDoseByPublishDate"],
+    newDayOnDay:
+      parsedData[latestIndex]["newPeopleVaccinatedFirstDoseByPublishDate"] -
+      parsedData[latestIndex - 1]["newPeopleVaccinatedFirstDoseByPublishDate"],
+    newDayOnDayPercent:
+      parsedData[latestIndex]["newPeopleVaccinatedFirstDoseByPublishDate"] /
+        parsedData[latestIndex - 1][
+          "newPeopleVaccinatedFirstDoseByPublishDate"
+        ] -
+      1,
+    newWeekOnWeek:
+      parsedData[latestIndex]["newPeopleVaccinatedFirstDoseByPublishDate"] -
+      parsedData[latestIndex - 7]["newPeopleVaccinatedFirstDoseByPublishDate"],
+    newWeekOnWeekPercent:
+      parsedData[latestIndex]["newPeopleVaccinatedFirstDoseByPublishDate"] /
+        parsedData[latestIndex - 7][
+          "newPeopleVaccinatedFirstDoseByPublishDate"
+        ] -
+      1,
+    sevenDaysRate: parsedData[latestIndex]["sevenDaysRate"],
+    sevenDaysRateDayOnDay:
+      parsedData[latestIndex]["sevenDaysRate"] -
+      parsedData[latestIndex - 1]["sevenDaysRate"],
+
+    sevenDaysRateDayOnDayPercent:
+      parsedData[latestIndex]["sevenDaysRate"] /
+        parsedData[latestIndex - 1]["sevenDaysRate"] -
+      1,
+    sevenDaysRateWeekOnWeek:
+      parsedData[latestIndex]["sevenDaysRate"] -
+      parsedData[latestIndex - 7]["sevenDaysRate"],
+
+    sevenDaysRateWeekOnWeekPercent:
+      parsedData[latestIndex]["sevenDaysRate"] /
+        parsedData[latestIndex - 7]["sevenDaysRate"] -
+      1,
+    adultPopulationDone:
+      parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"] /
+      53000000,
+    adultPopulationDoneDayOnDay:
+      parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"] /
+        53000000 -
+      parsedData[latestIndex - 1]["cumPeopleVaccinatedFirstDoseByPublishDate"] /
+        53000000,
+    adultPopulationDoneWeekOnWeek:
+      parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"] /
+        53000000 -
+      parsedData[latestIndex - 7]["cumPeopleVaccinatedFirstDoseByPublishDate"] /
+        53000000,
+    priorityGroupsDone:
+      parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"] /
+      32000000,
+    priorityGroupsDoneDayOnDay:
+      parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"] /
+        32000000 -
+      parsedData[latestIndex - 1]["cumPeopleVaccinatedFirstDoseByPublishDate"] /
+        32000000,
+    priorityGroupsDoneWeekOnWeek:
+      parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"] /
+        32000000 -
+      parsedData[latestIndex - 7]["cumPeopleVaccinatedFirstDoseByPublishDate"] /
+        32000000,
+  };
+
+  statistics.secondDosesStatistics = {
+    total:
+      parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"],
+    totalDayOnDay:
+      parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"] -
+      parsedData[latestIndex - 1]["cumPeopleVaccinatedSecondDoseByPublishDate"],
+
+    totalDayOnDayPercent:
+      parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"] /
+        parsedData[latestIndex - 1][
+          "cumPeopleVaccinatedSecondDoseByPublishDate"
+        ] -
+      1,
+    totalWeekOnWeek:
+      parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"] -
+      parsedData[latestIndex - 7]["cumPeopleVaccinatedSecondDoseByPublishDate"],
+
+    totalWeekOnWeekPercent:
+      parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"] /
+        parsedData[latestIndex - 7][
+          "cumPeopleVaccinatedSecondDoseByPublishDate"
+        ] -
+      1,
+    new: parsedData[latestIndex]["newPeopleVaccinatedSecondDoseByPublishDate"],
+    newDayOnDay:
+      parsedData[latestIndex]["newPeopleVaccinatedSecondDoseByPublishDate"] -
+      parsedData[latestIndex - 1]["newPeopleVaccinatedSecondDoseByPublishDate"],
+    newDayOnDayPercent:
+      parsedData[latestIndex]["newPeopleVaccinatedSecondDoseByPublishDate"] /
+        parsedData[latestIndex - 1][
+          "newPeopleVaccinatedSecondDoseByPublishDate"
+        ] -
+      1,
+    newWeekOnWeek:
+      parsedData[latestIndex]["newPeopleVaccinatedSecondDoseByPublishDate"] -
+      parsedData[latestIndex - 7]["newPeopleVaccinatedSecondDoseByPublishDate"],
+    newWeekOnWeekPercent:
+      parsedData[latestIndex]["newPeopleVaccinatedSecondDoseByPublishDate"] /
+        parsedData[latestIndex - 7][
+          "newPeopleVaccinatedSecondDoseByPublishDate"
+        ] -
+      1,
+    sevenDaysRate: parsedData[latestIndex]["sevenDaysRateSecond"],
+    sevenDaysRateDayOnDay:
+      parsedData[latestIndex]["sevenDaysRateSecond"] -
+      parsedData[latestIndex - 1]["sevenDaysRateSecond"],
+
+    sevenDaysRateDayOnDayPercent:
+      parsedData[latestIndex]["sevenDaysRateSecond"] /
+        parsedData[latestIndex - 1]["sevenDaysRateSecond"] -
+      1,
+    sevenDaysRateWeekOnWeek:
+      parsedData[latestIndex]["sevenDaysRateSecond"] -
+      parsedData[latestIndex - 7]["sevenDaysRateSecond"],
+
+    sevenDaysRateWeekOnWeekPercent:
+      parsedData[latestIndex]["sevenDaysRateSecond"] /
+        parsedData[latestIndex - 7]["sevenDaysRateSecond"] -
+      1,
+    adultPopulationDone:
+      parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"] /
+      53000000,
+    adultPopulationDoneDayOnDay:
+      parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"] /
+        53000000 -
+      parsedData[latestIndex - 1][
+        "cumPeopleVaccinatedSecondDoseByPublishDate"
+      ] /
+        53000000,
+    adultPopulationDoneWeekOnWeek:
+      parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"] /
+        53000000 -
+      parsedData[latestIndex - 7][
+        "cumPeopleVaccinatedSecondDoseByPublishDate"
+      ] /
+        53000000,
+    priorityGroupsDone:
+      parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"] /
+      32000000,
+    priorityGroupsDoneDayOnDay:
+      parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"] /
+        32000000 -
+      parsedData[latestIndex - 1][
+        "cumPeopleVaccinatedSecondDoseByPublishDate"
+      ] /
+        32000000,
+    priorityGroupsDoneWeekOnWeek:
+      parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"] /
+        32000000 -
+      parsedData[latestIndex - 7][
+        "cumPeopleVaccinatedSecondDoseByPublishDate"
+      ] /
+        32000000,
+  };
+
+  return statistics;
 };

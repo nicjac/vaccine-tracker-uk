@@ -17,6 +17,7 @@ import {
   YAxis,
   BarChart,
   ResponsiveContainer,
+  ReferenceArea,
 } from "recharts";
 import { Grid, Segment, Header } from "semantic-ui-react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
@@ -69,6 +70,13 @@ const SecondDoseDebt = ({
   }, [parsedData, debtData, weeklyDebtData, rateForPredictions]);
 
   if (debtData && indexAllDone) {
+    const dateStartPredicted = debtData.find((datum) => datum.predicted).date;
+    const dateStartPredictedWeekly = weeklyDebtData.find(
+      (datum) => datum.predicted
+    ).weekFirstDay;
+
+    console.log(dateStartPredictedWeekly);
+
     return (
       <Fragment>
         <Header as="h4">
@@ -142,8 +150,20 @@ const SecondDoseDebt = ({
               y="32000000"
               strokeDasharray="3 3"
               label={{
-                position: "insideBottomRight",
+                position: "insideBottomLeft",
                 value: "Priority Groups ",
+                fontSize: 16,
+              }}
+            />
+            <ReferenceArea
+              x1={dateStartPredicted}
+              x2={debtData[indexAllDone + 4].date}
+              // y1={0}
+              // y2={45000000}
+              strokeWidth={5}
+              label={{
+                position: "insideTopLeft",
+                value: "🔮 Predicted ➡️",
                 fontSize: 16,
               }}
             />
@@ -182,7 +202,7 @@ const SecondDoseDebt = ({
             }}
           >
             {/* <CartesianGrid strokeDasharray="3 3" /> */}
-            <Legend
+            {/* <Legend
               verticalAlign="top"
               height={36}
               formatter={(value, entry, index) => {
@@ -194,7 +214,7 @@ const SecondDoseDebt = ({
                     return "Second Dose";
                 }
               }}
-            />
+            /> */}
             <XAxis
               dataKey="weekFirstDay"
               tick={<CustomizedAxisTick />}
@@ -209,15 +229,28 @@ const SecondDoseDebt = ({
             <YAxis
               label={
                 <Text x={0} y={0} dx={30} dy={245} offset={0} angle={-90}>
-                  Daily Vaccinations
+                  Average Daily Vaccinations
                 </Text>
               }
               tickFormatter={(value) =>
                 new Intl.NumberFormat("en").format(value)
               }
             />
+            <ReferenceArea
+              x1={dateStartPredictedWeekly}
+              x2={weeklyDebtData[indexAllDoneWeekly].weekFirstDay}
+              // y1={0}
+              // y2={45000000}
+              strokeWidth={5}
+              label={{
+                position: "insideTopLeft",
+                value: "🔮 Predicted ➡️",
+                fontSize: 16,
+              }}
+            />
             <Bar dataKey="firstDosesDone" stackId="a" fill="#8884d8" />
             <Bar dataKey="secondDosesDone" stackId="a" fill="#82ca9d" />
+            <Tooltip />
           </BarChart>
         </ResponsiveContainer>
 
