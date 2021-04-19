@@ -74,8 +74,11 @@ const SecondDoseDebt = ({
     const dateStartPredictedWeekly = weeklyDebtData.find(
       (datum) => datum.predicted
     ).weekFirstDay;
+    const indextStartPredictedWeekly = weeklyDebtData.findIndex(
+      (datum) => datum.predicted
+    );
 
-    console.log(dateStartPredictedWeekly);
+    // console.log(dateStartPredictedWeekly);
 
     return (
       <Fragment>
@@ -237,8 +240,12 @@ const SecondDoseDebt = ({
               }
             />
             <ReferenceArea
-              x1={dateStartPredictedWeekly}
-              x2={weeklyDebtData[indexAllDoneWeekly].weekFirstDay}
+              // x1={dateStartPredictedWeekly}
+              // x2={weeklyDebtData[indexAllDoneWeekly - 1].weekFirstDay}
+              // x1={"2021-04-11"}
+              // x2={"2021-05-16"}
+              x1={indextStartPredictedWeekly}
+              x2={indexAllDoneWeekly}
               // y1={0}
               // y2={45000000}
               strokeWidth={5}
