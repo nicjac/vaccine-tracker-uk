@@ -11,9 +11,11 @@ import {
   Text,
   Legend,
   ResponsiveContainer,
+  Brush,
 } from "recharts";
 import moment from "moment";
 import _ from "lodash";
+import { useWindowSize } from "../hooks/WindowSize";
 
 const CustomizedAxisTick = ({ x, y, stroke, payload }) => {
   return (
@@ -36,6 +38,19 @@ const CustomizedAxisTick = ({ x, y, stroke, payload }) => {
 };
 
 const DailyRatesPlot = ({ parsedData }) => {
+  let windowSize = useWindowSize();
+
+  const [brushInits, setBrushInits] = useState({ start: 0, end: 0 });
+
+  useEffect(() => {
+    if (windowSize.width < 800) {
+      if (parsedData) setBrushInits({ start: parsedData.length - 30 });
+      else setBrushInits({ start: 50 });
+    }
+  }, [windowSize]);
+
+  console.log(windowSize);
+
   if (parsedData) {
     return (
       <ResponsiveContainer width="100%" aspect={2.5}>
@@ -49,7 +64,7 @@ const DailyRatesPlot = ({ parsedData }) => {
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <Legend
+          {/* <Legend
             verticalAlign="top"
             height={36}
             formatter={(value, entry, index) => {
@@ -67,7 +82,7 @@ const DailyRatesPlot = ({ parsedData }) => {
                   return "First Dose (7-day average)";
               }
             }}
-          />
+          /> */}
           <XAxis
             dataKey="date"
             tick={<CustomizedAxisTick />}
@@ -159,6 +174,12 @@ const DailyRatesPlot = ({ parsedData }) => {
             strokeWidth={2}
             dot={true}
           />
+          {/* <Brush
+            dataKey="date"
+            height={30}
+            stroke="#8884d8"
+            startIndex={brushInits.start}
+          /> */}
         </ComposedChart>
       </ResponsiveContainer>
     );
