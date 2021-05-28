@@ -351,8 +351,8 @@ export const computeStatistics = (parsedData) => {
     sevenDaysRateDayOnDay:
       parsedData[latestIndex]["sevenDaysRate"] +
       parsedData[latestIndex]["sevenDaysRateSecond"] -
-      parsedData[latestIndex - 1]["sevenDaysRate"] +
-      parsedData[latestIndex - 1]["sevenDaysRateSecond"],
+      (parsedData[latestIndex - 1]["sevenDaysRate"] +
+        parsedData[latestIndex - 1]["sevenDaysRateSecond"]),
 
     sevenDaysRateDayOnDayPercent:
       (parsedData[latestIndex]["sevenDaysRate"] +
@@ -363,8 +363,8 @@ export const computeStatistics = (parsedData) => {
     sevenDaysRateWeekOnWeek:
       parsedData[latestIndex]["sevenDaysRate"] +
       parsedData[latestIndex]["sevenDaysRateSecond"] -
-      parsedData[latestIndex - 7]["sevenDaysRate"] +
-      parsedData[latestIndex - 7]["sevenDaysRateSecond"],
+      (parsedData[latestIndex - 7]["sevenDaysRate"] +
+        parsedData[latestIndex - 7]["sevenDaysRateSecond"]),
 
     sevenDaysRateWeekOnWeekPercent:
       (parsedData[latestIndex]["sevenDaysRate"] +
