@@ -19,9 +19,8 @@ const ScoreCardGroupWithDebt = ({
   const [predictionAdultsFirst, setPredictionAdultsFirst] = useState(null);
   const [predictionAdultsSecond, setPredictionAdultsSecond] = useState(null);
   const [predictionPriorityFirst, setPredictionPriorityFirst] = useState(null);
-  const [predictionPrioritySecond, setPredictionPrioritySecond] = useState(
-    null
-  );
+  const [predictionPrioritySecond, setPredictionPrioritySecond] =
+    useState(null);
 
   return (
     <Grid stackable centered columns={3}>
@@ -37,13 +36,7 @@ const ScoreCardGroupWithDebt = ({
               Targets scorecards 🎯 on {moment(dateUpdated).format("DD MMMM")}
               <br />
               <br />
-              {predictionPriorityFirst.delta < 0 ? "✅" : "❌"}32M by 15 Apr (
-              {Math.abs(predictionPriorityFirst.delta)} days{" "}
-              {predictionPriorityFirst.delta < 0 ? "early" : "late"} on{" "}
-              {moment(predictionPriorityFirst.eventDay.date).format("DD/MM")}
-              )
-              <br />
-              {predictionAdultsFirst.delta < 0 ? "✅" : "❌"}53M by 31 Jul (
+              {predictionAdultsFirst.delta < 0 ? "✅" : "❌"}53M by 19 July (
               {Math.abs(predictionAdultsFirst.delta)} days{" "}
               {predictionAdultsFirst.delta < 0 ? "early" : "late"} on{" "}
               {moment(predictionAdultsFirst.eventDay.date).format("DD/MM")})
@@ -61,14 +54,8 @@ const ScoreCardGroupWithDebt = ({
               {moment(dateUpdated).format("DD MMMM")}
               <br />
               <br />
-              {moment(predictionPriorityFirst.eventDay.date).format("D MMMM")}
-              ➡️All Priority Groups received a 1st dose
-              <br />
               {moment(predictionAdultsFirst.eventDay.date).format("D MMMM")}
               ➡️All Adults received a 1st dose
-              <br />
-              {moment(predictionPrioritySecond.eventDay.date).format("D MMMM")}
-              ➡️All Priority Groups received 2 doses
               <br />
               {moment(predictionAdultsSecond.eventDay.date).format("D MMMM")}
               ➡️All Adults received 2 doses

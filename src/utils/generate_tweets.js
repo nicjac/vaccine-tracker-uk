@@ -21,12 +21,11 @@ export const generateTweetHistoricalData = (
   return (
     <Fragment>
       <Segment textAlign="left">
-        📈{moment(updateDate).format("DD MMMM")} Progress Tracker📈
+        {moment(updateDate).format("DD MMMM")} UK Vaccine Progress Tracker
         <br />
         <br />
-        1️⃣ 1st Dose
+        1️⃣ 1st Dose (Adults)
         <br />
-        Adults{" "}
         {"▓".repeat(
           Math.ceil(statistics.firstDosesStatistics.adultPopulationDone * 20)
         )}
@@ -37,26 +36,9 @@ export const generateTweetHistoricalData = (
         {(statistics.firstDosesStatistics.adultPopulationDone * 100).toFixed(0)}
         %
         <br />
-        Priority{" "}
-        {"▓".repeat(
-          Math.ceil(statistics.firstDosesStatistics.priorityGroupsDone * 20)
-        )}
-        {20 -
-          Math.ceil(statistics.firstDosesStatistics.priorityGroupsDone * 20) >
-        0
-          ? "░".repeat(
-              20 -
-                Math.ceil(
-                  statistics.firstDosesStatistics.priorityGroupsDone * 20
-                )
-            )
-          : null}{" "}
-        {(statistics.firstDosesStatistics.priorityGroupsDone * 100).toFixed(0)}
-        %
         <br />
+        2️⃣ 2nd Dose (Adults)
         <br />
-        2️⃣ 2nd Dose <br />
-        Adults{" "}
         {"▓".repeat(
           Math.ceil(statistics.secondDosesStatistics.adultPopulationDone * 20)
         )}
@@ -69,19 +51,8 @@ export const generateTweetHistoricalData = (
         )}
         %
         <br />
-        Priority{" "}
-        {"▓".repeat(
-          Math.ceil(statistics.secondDosesStatistics.priorityGroupsDone * 20)
-        )}
-        {"░".repeat(
-          20 -
-            Math.ceil(statistics.secondDosesStatistics.priorityGroupsDone * 20)
-        )}{" "}
-        {(statistics.secondDosesStatistics.priorityGroupsDone * 100).toFixed(0)}
-        %
         <br />
-        <br />
-        #vaccine
+        #vaccine #vaccination #VaccinesWork
       </Segment>
       <Segment textAlign="left">
         1️⃣+2️⃣ All Doses Update on {moment(updateDate).format("DD MMMM")} 📢
