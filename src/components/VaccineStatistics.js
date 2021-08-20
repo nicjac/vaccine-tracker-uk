@@ -65,8 +65,9 @@ const VaccineStatistics = ({ parsedData, showTweets }) => {
       setFirstDosesStatistics({
         total:
           parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"],
-        new:
-          parsedData[latestIndex]["newPeopleVaccinatedFirstDoseByPublishDate"],
+        new: parsedData[latestIndex][
+          "newPeopleVaccinatedFirstDoseByPublishDate"
+        ],
         dayOnDay:
           parsedData[latestIndex]["newPeopleVaccinatedFirstDoseByPublishDate"] /
             parsedData[latestIndex - 1][
@@ -95,8 +96,9 @@ const VaccineStatistics = ({ parsedData, showTweets }) => {
       setSecondDosesStatistics({
         total:
           parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"],
-        new:
-          parsedData[latestIndex]["newPeopleVaccinatedSecondDoseByPublishDate"],
+        new: parsedData[latestIndex][
+          "newPeopleVaccinatedSecondDoseByPublishDate"
+        ],
         dayOnDay:
           parsedData[latestIndex][
             "newPeopleVaccinatedSecondDoseByPublishDate"

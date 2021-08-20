@@ -434,17 +434,17 @@ export const computeStatistics = (parsedData) => {
       1,
     adultPopulationDone:
       parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"] /
-      53000000,
+      54353665,
     adultPopulationDoneDayOnDay:
       parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"] /
-        53000000 -
+        54353665 -
       parsedData[latestIndex - 1]["cumPeopleVaccinatedFirstDoseByPublishDate"] /
-        53000000,
+        54353665,
     adultPopulationDoneWeekOnWeek:
       parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"] /
-        53000000 -
+        54353665 -
       parsedData[latestIndex - 7]["cumPeopleVaccinatedFirstDoseByPublishDate"] /
-        53000000,
+        54353665,
     priorityGroupsDone:
       parsedData[latestIndex]["cumPeopleVaccinatedFirstDoseByPublishDate"] /
       32000000,
@@ -521,21 +521,21 @@ export const computeStatistics = (parsedData) => {
       1,
     adultPopulationDone:
       parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"] /
-      53000000,
+      54353665,
     adultPopulationDoneDayOnDay:
       parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"] /
-        53000000 -
+        54353665 -
       parsedData[latestIndex - 1][
         "cumPeopleVaccinatedSecondDoseByPublishDate"
       ] /
-        53000000,
+        54353665,
     adultPopulationDoneWeekOnWeek:
       parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"] /
-        53000000 -
+        54353665 -
       parsedData[latestIndex - 7][
         "cumPeopleVaccinatedSecondDoseByPublishDate"
       ] /
-        53000000,
+        54353665,
     priorityGroupsDone:
       parsedData[latestIndex]["cumPeopleVaccinatedSecondDoseByPublishDate"] /
       32000000,

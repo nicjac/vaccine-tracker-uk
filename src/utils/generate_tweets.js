@@ -24,7 +24,7 @@ export const generateTweetHistoricalData = (
         {moment(updateDate).format("DD MMMM")} UK Vaccine Progress Tracker
         <br />
         <br />
-        1️⃣ 1st Dose (Adults)
+        1️⃣ 1st Dose (16+)
         <br />
         {"▓".repeat(
           Math.ceil(statistics.firstDosesStatistics.adultPopulationDone * 20)
@@ -37,7 +37,7 @@ export const generateTweetHistoricalData = (
         %
         <br />
         <br />
-        2️⃣ 2nd Dose (Adults)
+        2️⃣ 2nd Dose (16+)
         <br />
         {"▓".repeat(
           Math.ceil(statistics.secondDosesStatistics.adultPopulationDone * 20)
