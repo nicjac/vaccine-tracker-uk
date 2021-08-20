@@ -247,7 +247,7 @@ const VaccineStatistics = ({ parsedData, showTweets }) => {
                   )}
                   %
                 </Statistic.Value>
-                <Statistic.Label>Adults (53M)</Statistic.Label>
+                <Statistic.Label>16+ (54.4M)</Statistic.Label>
               </Statistic>
               <Statistic>
                 <Statistic.Value>
@@ -318,7 +318,7 @@ const VaccineStatistics = ({ parsedData, showTweets }) => {
                   )}
                   %
                 </Statistic.Value>
-                <Statistic.Label>Adults (53M)</Statistic.Label>
+                <Statistic.Label>16+ (54.4M)</Statistic.Label>
               </Statistic>
               <Statistic>
                 <Statistic.Value>

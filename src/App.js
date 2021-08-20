@@ -46,9 +46,8 @@ function App() {
   const [debtData, setDebtData] = useState(null);
   const [weeklyDebtData, setWeeklyDebtData] = useState(null);
   const [rateForPredictions, setRateForPredictions] = useState(null);
-  const [currentRateForPredictions, setCurrentRateForPredictions] = useState(
-    null
-  );
+  const [currentRateForPredictions, setCurrentRateForPredictions] =
+    useState(null);
   const [loading, setLoading] = useState(true);
   const [statistics, setStatistics] = useState(null);
 
@@ -506,7 +505,7 @@ function App() {
             loading={loading}
           />
         </Segment>
-        <GenericContainer
+        {/* <GenericContainer
           ChildComponent={
             <ScoreCardGroupWithDebt
               parsedData={parsedData}
@@ -520,7 +519,7 @@ function App() {
           A strict 12-week delay is introduced between 1st and 2nd doses. 2nd doses always take priority."
           dateUpdated={updateDate}
           loading={loading}
-        />
+        /> */}
         <GenericContainer
           ChildComponent={
             <SecondDoseDebt

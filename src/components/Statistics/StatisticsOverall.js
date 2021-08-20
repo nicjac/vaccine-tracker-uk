@@ -24,8 +24,8 @@ const StatisticsOverall = ({
       <Card.Group centered textAlign="left">
         <Card textAlign="left" compact>
           <Card.Content>
-            <Card.Header>Adult Population</Card.Header>
-            <Card.Meta>53M individuals</Card.Meta>
+            <Card.Header>16+ Population</Card.Header>
+            <Card.Meta>54.4M individuals</Card.Meta>
 
             <Card.Description>
               <Header as="h5" style={{ marginBottom: "2px" }}>
